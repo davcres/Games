@@ -5,5 +5,6 @@
     <color name="colorAccent">#F57C00</color>
     <color name="background">#ECEFF1</color>
     <color name="red">#FF0000</color>
+    <color name="backgroundGame">#84FFFF</color>
 
 </resources>

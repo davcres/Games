@@ -13,7 +13,8 @@
         android:label="Firebase"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".GameActivity" />
+        <activity android:name=".HomeActivity" />
         <activity
             android:name=".AuthActivity"
             android:theme="@style/SplashTheme">
@@ -23,6 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <activity android:name="com.facebook.FacebookActivity"

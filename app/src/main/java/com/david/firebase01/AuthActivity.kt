@@ -105,7 +105,7 @@ class AuthActivity : AppCompatActivity() {
         //Al pulsar en btn registrar se ejecuta lo que hay aqui
         btnRegistrar.setOnClickListener{
             if (etEmail.text.isNotEmpty() && etContrasena.text.isNotEmpty()){
-                print(etEmail.text.toString() + ", " + etContrasena.text.toString())
+                //print(etEmail.text.toString() + ", " + etContrasena.text.toString())
                 FirebaseAuth.getInstance()
                     .createUserWithEmailAndPassword(
                         etEmail.text.toString(),

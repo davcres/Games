@@ -1,6 +1,7 @@
 package com.david.firebase01
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -51,7 +52,7 @@ class HomeActivity : AppCompatActivity() {
                 //string asociado a la config de que texto mostrar en el boton
                 val errorButtonText=Firebase.remoteConfig.getString("error_button_text")
                 if(showErrorButton){
-                    btnForzarError.visibility= View.VISIBLE
+                    btnJugar.visibility= View.VISIBLE
                 }
                 btnForzarError.text=errorButtonText
             }
@@ -105,5 +106,17 @@ class HomeActivity : AppCompatActivity() {
         btnEliminar.setOnClickListener {
             db.collection("users").document(email).delete()
         }
+
+        btnJugar.setOnClickListener {
+            showGame()
+        }
+    }
+
+    private fun showGame(){
+        val gameIntent = Intent(this, GameActivity::class.java)
+            /*.apply {
+                lo que le quiera pasar a la nueva activity
+        }*/
+        startActivity(gameIntent)
     }
 }
