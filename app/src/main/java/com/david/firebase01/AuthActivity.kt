@@ -32,7 +32,7 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Splash
-        Thread.sleep(250) //hack
+        Thread.sleep(10) //hack
         setTheme(R.style.AppTheme)
 
         super.onCreate(savedInstanceState)
