@@ -2,16 +2,17 @@ package com.david.firebase01
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-
 import kotlinx.android.synthetic.main.activity_game.*
 import kotlin.random.Random
-import kotlin.random.nextInt
 
 class GameActivity: AppCompatActivity(), View.OnClickListener{
-    private var b1: Button? = null
+    private var b: Button? = null       //primer boton pulsado de esta jugada
+    private var b1Ant: Button? = null   //primer boton pulsado de la jugada anterior
+    private var b2Ant: Button? = null   //segund boton pulsado de la jugada anterior
     private var elementos = 15
     private val list = arrayListOf<Int>()
 
@@ -41,7 +42,6 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
         button15.setOnClickListener(this)
         button16.setOnClickListener(this)
     }
-
 
     override fun onClick(view: View) {
         when (view) {
@@ -97,26 +97,56 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
     }
 
     private fun marcar(button: Button){
-        when(b1){
+        when(b){
             null -> {
-                b1 = button
-                b1?.setBackgroundColor(Color.parseColor("#00ffff")) //cian
+                reiniciar()
+                b = button
+                setColor(b, "#00ffff")  //cian
             }
             button -> {
-                button.setBackgroundColor(Color.parseColor("#84FFFF"))
-                b1=null
+                setColor(button, "#84FFFF")
+                b = null
             }
             else -> {
-                if(button.text.toString() == b1?.text.toString()) {
-                    b1?.visibility=View.INVISIBLE
-                    button.visibility=View.INVISIBLE
+                b1Ant = b //para que si se pulsa otro boton rapido no se lie, y b sea null cuanto antes
+                b2Ant = button //b y button van a cambiar antes, b1Ant y b2Ant tardan mas
+                b=null
+                setTextSize(b1Ant, 30F)
+                setTextSize(b2Ant, 30F)
+                if(b2Ant?.text.toString() == b1Ant!!.text.toString()) {
+                    //para que no te borre los siguientes que pulses si los pulsas muy rapido
+                    var borrar1 = b1Ant
+                    var borrar2 = b2Ant
+                    setColor(b1Ant, "#00FF00") //green
+                    setColor(b2Ant, "#00FF00") //green
+                    Handler().postDelayed(Runnable {
+                        borrar1!!.visibility = View.INVISIBLE
+                        borrar2?.visibility = View.INVISIBLE
+                    }, 1000)
                 }else{
-                    button.setBackgroundColor(Color.parseColor("#FF0000"))
-                    b1?.setBackgroundColor(Color.parseColor("#FF0000"))
+                    setColor(b1Ant, "#FF0000") //red
+                    setColor(b2Ant, "#FF0000") //red
+                    Handler().postDelayed(Runnable {
+                        reiniciar()
+                    }, 1000)
                 }
-                b1=null
             }
         }
+    }
+
+    private fun reiniciar(){
+        setColor(b1Ant, "#84FFFF")
+        setColor(b2Ant, "#84FFFF")
+        setTextSize(b1Ant, 0F)
+        setTextSize(b2Ant, 0F)
+    }
+
+    private fun setColor(b: Button?, c: String){
+        b?.setBackgroundColor(Color.parseColor(c))
+    }
+
+    private fun setTextSize(b: Button?, s: Float){
+        b?.setTextSize(1, s)
     }
 
     private fun generarParejas(){
