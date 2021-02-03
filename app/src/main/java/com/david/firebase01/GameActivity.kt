@@ -6,6 +6,7 @@ import android.os.Handler
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_game.*
 import kotlin.random.Random
 
@@ -15,10 +16,27 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
     private var b2Ant: Button? = null   //segund boton pulsado de la jugada anterior
     private var elementos = 15
     private val list = arrayListOf<Int>()
+    private var puntuacion=0
+    private val db = FirebaseFirestore.getInstance() //instancia de la bd definida en remoto
+    private var email: String? = ""
+    private var partida: Long = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+
+        //recuperar los parametros de la otra activity
+        val bundle = intent.extras
+        email = bundle?.getString("email")
+
+        //recuperar el num de partidas de la bd
+        db.collection("users").document(email ?:"sin registrar").collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
+            partida = it.get("numPartidas") as Long? ?:0
+            if(partida==0.toLong())
+                partida=1
+            else
+                partida += 1 //sumamos 1 para que guarde la siguiente partida a la ultima echada
+        }
 
         clickers()
         generarParejas()
@@ -114,6 +132,7 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                 setTextSize(b1Ant, 30F)
                 setTextSize(b2Ant, 30F)
                 if(b2Ant?.text.toString() == b1Ant!!.text.toString()) {
+                    elementos -= 2
                     //para que no te borre los siguientes que pulses si los pulsas muy rapido
                     var borrar1 = b1Ant
                     var borrar2 = b2Ant
@@ -123,7 +142,34 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                         borrar1!!.visibility = View.INVISIBLE
                         borrar2?.visibility = View.INVISIBLE
                     }, 1000)
+                    if(elementos==0){
+                        puntuacionTV.setText("Tu puntuación es: $puntuacion puntos")
+                        db.collection("users").document(email ?: "sin identificar").collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
+                            if(it.exists()){
+                                db.collection("users").document(email ?: "sin identificar")
+                                    .collection("puntuaciones").document("puntuaciones").update(
+                                        mapOf(
+                                            "numPartidas" to partida,
+                                            partida.toString() to puntuacion
+                                        )
+                                    )
+                            }else{
+                                db.collection("users").document(email ?: "sin identificar")
+                                    .collection("puntuaciones").document("puntuaciones").set(
+                                        mapOf(
+                                            "numPartidas" to partida,
+                                            partida.toString() to puntuacion
+                                        )
+                                )
+                            }
+                            //tb puedo ponerlo aaqui supongo como el partida += 1
+                        }/*.addOnSuccessListener {
+                            //lo que quiera ejecutar despues de la base de datos, si no pongo el addOnComplete se ejecuta antes que lo de arriba
+                        }*/
+                    }
                 }else{
+                    puntuacion += 10
+                    puntuacionTV.setText("punt: $puntuacion-part $partida")
                     setColor(b1Ant, "#FF0000") //red
                     setColor(b2Ant, "#FF0000") //red
                     Handler().postDelayed(Runnable {
@@ -167,7 +213,7 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
         ponerNum(button14)
         ponerNum(button15)
         ponerNum(button16)
-
+        elementos=16
     }
 
     private fun ponerNum(b: Button){

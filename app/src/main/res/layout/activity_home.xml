@@ -57,6 +57,7 @@
                 android:layout_weight="1"
                 android:background="#FFFFFF"
                 android:textColor="#000000"
+                android:textSize="16dp"
                 android:text="Guardar" />
 
         </LinearLayout>
@@ -74,6 +75,7 @@
                 android:layout_weight="1"
                 android:background="#FFFFFF"
                 android:textColor="#000000"
+                android:textSize="16dp"
                 android:text="Recuperar" />
 
         </LinearLayout>
@@ -91,6 +93,7 @@
                 android:layout_weight="1"
                 android:background="#FFFFFF"
                 android:textColor="#000000"
+                android:textSize="16dp"
                 android:text="Eliminar" />
 
         </LinearLayout>
@@ -115,6 +118,24 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/RankingButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/holo_blue_dark"
+                android:textColor="@android:color/white"
+                android:textSize="16dp"
+                android:text="Ranking" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <Button
@@ -125,6 +146,7 @@
                 android:layout_weight="1"
                 android:background="@color/colorAccent"
                 android:textColor="@android:color/white"
+                android:textSize="16dp"
                 android:text="Cerrar Sesion" />
 
         </LinearLayout>

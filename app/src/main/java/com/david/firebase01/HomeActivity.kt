@@ -82,12 +82,13 @@ class HomeActivity : AppCompatActivity() {
 
         //Guardar datos en base de datos
         btnGuardar.setOnClickListener {
-            //definimos una coleccion(estructura de datos) asociada a nuestra app
-            db.collection("users"/*nombre de la coleccion para almacenar a todos los usuarios*/).document(email/*clave del documento asociado al usuario de nuestra app => 1 documento por cada email(usuario) y los datos son el valor*/).set(
+            db.collection("users"/*nombre de la coleccion para almacenar a todos los usuarios*/).document(email/*clave del documento asociado al usuario de nuestra app => 1 documento por cada email(usuario) y los datos son el valor*/).set( /*set sustituye si hubiera algo antes, con update podemos añadir sin borrar otros campos. si no hay nada, update falla*/
                 //estos datos que incluimos en el documento del usuario a su vez van en forma de hashmap clave-valor
-                hashMapOf("provider"/*clave*/ to provider/*valor*/,
-                "address" to tvAddress.text.toString(),
-                "phone" to tvTelefono.text.toString())
+                mapOf(
+                    "provider"/*clave*/ to provider/*valor*/,
+                    "address" to tvAddress.text.toString(),
+                    "phone" to tvTelefono.text.toString()
+                )
             )
             //si un usuario inicia sesion en diferentes apps, con su email podemos recuperar su info, y da igual en que dispositivo esté
 
@@ -97,8 +98,8 @@ class HomeActivity : AppCompatActivity() {
         //Recuperar datos de base de datos
         btnRecuperar.setOnClickListener {
             db.collection("users").document(email).get().addOnSuccessListener {
-                tvAddress.setText(it.get("address") as String? ?:"No hay datos")
-                tvTelefono.setText(it.get("phone") as String? ?:"No hay datos") //toString si no hay nada te pone null, asi + bonito
+                tvAddress.setText(it.get("address") as String? ?:"")
+                tvTelefono.setText(it.get("phone") as String? ?:"") //toString si no hay nada te pone null, asi + bonito
             }
         }
 
@@ -108,15 +109,27 @@ class HomeActivity : AppCompatActivity() {
         }
 
         btnJugar.setOnClickListener {
-            showGame()
+            btnGuardar.callOnClick()
+            showGame(email)
+        }
+
+        RankingButton.setOnClickListener {
+            showRanking(email)
         }
     }
 
-    private fun showGame(){
-        val gameIntent = Intent(this, GameActivity::class.java)
-            /*.apply {
-                lo que le quiera pasar a la nueva activity
-        }*/
+    private fun showGame(email: String){
+        val gameIntent = Intent(this, GameActivity::class.java).apply {
+            //lo que le quiera pasar a la nueva activity
+            putExtra("email", email)
+        }
         startActivity(gameIntent)
+    }
+
+    private fun showRanking(email: String){
+        val rankingIntent = Intent(this, RankingActivity::class.java).apply {
+            putExtra("email", email)
+        }
+        startActivity(rankingIntent)
     }
 }

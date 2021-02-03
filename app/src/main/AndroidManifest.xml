@@ -13,6 +13,7 @@
         android:label="Firebase"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".RankingActivity"/>
         <activity android:name=".GameActivity" />
         <activity android:name=".HomeActivity" />
         <activity
