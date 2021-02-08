@@ -58,18 +58,22 @@ class RankingActivity: AppCompatActivity() {
     }
 
     private fun ranking(item: String) {
-        var puntuaciones = ArrayList<Array<String>>();
-        var entrada: Array<String>
+        var puntuaciones = ArrayList<Pair<String, Int>>()
+        var entrada: Pair<String, Int> //par<email, puntuacion>
         when (item) {
             "Individual" -> {
+                //puntuaciones = ArrayList<Array<String>>() inicializarlo para que no se acumulen las de otros no se si necesario creo que no
                 Toast.makeText(this, item, Toast.LENGTH_LONG).show()
                 db.collection("users").document(email ?: "sin registrar").collection("puntuaciones")
                     .document("puntuaciones").get().addOnSuccessListener {
-                        var partidas = it.get("numPartidas") as Long? ?: 0 //entra aunque no haya puntuaciones => '?'
+                        var partidas = it.get("numPartidas") as Long?
+                            ?: 0 //entra aunque no haya puntuaciones => '?'
                         while (partidas > 0) {
-                            entrada = Array<String>(2) { _ -> ""} // hay que inicializarlo cada vez para que sean objetos diferentes, si no todos apuntan a uno solo que se actualiza
-                            entrada[0]=email ?:"Sin registrar"
-                            entrada[1] = java.lang.String.valueOf(it.get(partidas.toString())) as String
+                            entrada = Pair<String, Int>(
+                                email ?: "Sin registrar",
+                                (it.get(partidas.toString()) as Long).toInt()
+                            ) // hay que inicializarlo cada vez para que sean objetos diferentes, si no todos apuntan a uno solo que se actualiza
+
                             puntuaciones.add(entrada)
                             partidas--
                         }
@@ -79,6 +83,7 @@ class RankingActivity: AppCompatActivity() {
                             LinearLayoutManager.VERTICAL,
                             false
                         )
+                        puntuaciones = ordenarPuntuaciones(puntuaciones)
                         var adaptador = AdapterRanking(puntuaciones)
                         rankingRecycler.adapter = adaptador
                     }
@@ -95,32 +100,90 @@ class RankingActivity: AppCompatActivity() {
             "Global" -> {
                 Toast.makeText(this, item, Toast.LENGTH_LONG).show()
                 db.collection("users").get().addOnSuccessListener { users ->
-                    for(documento in users){
-                        documento.reference.collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
-                            var partidas = it.get("numPartidas") as Long? ?: 0
-                            println("EMAIL: ${documento.toString()}, PARTIDAS: $partidas")
-                            while (partidas > 0) {
-                                entrada = Array<String>(2) { _ -> ""} // hay que inicializarlo cada vez para que sean objetos diferentes, si no todos apuntan a uno solo que se actualiza
-                                entrada[0]=email ?:"Sin registrar"
-                                entrada[1] = java.lang.String.valueOf(it.get(partidas.toString())) as String
-                                puntuaciones.add(entrada)
-                                partidas--
+                    for (documento in users) {
+                        documento.reference.collection("puntuaciones").document("puntuaciones")
+                            .get()
+                            .addOnSuccessListener {
+                                var partidas = it.get("numPartidas") as Long? ?: 0
+                                while (partidas > 0) {
+                                    entrada = Pair<String, Int>(
+                                        getEmail(documento.toString()),
+                                        (it.get(partidas.toString()) as Long).toInt()
+                                    ) // hay que inicializarlo cada vez para que sean objetos diferentes, si no todos apuntan a uno solo que se actualiza
+                                    puntuaciones.add(entrada)
+                                    partidas--
+                                }
+                            }.addOnSuccessListener {
+                                rankingRecycler.layoutManager = LinearLayoutManager(
+                                    this,
+                                    LinearLayoutManager.VERTICAL,
+                                    false
+                                )
+                                puntuaciones = ordenarPuntuaciones(puntuaciones)
+                                var adaptador = AdapterRanking(puntuaciones)
+                                rankingRecycler.adapter = adaptador
+
                             }
-                        }
                     }
-                }.addOnSuccessListener {
-                    //ME LLEGA VACIO
-                    println("ININININININININ")
-                    rankingRecycler.layoutManager = LinearLayoutManager(
-                        this,
-                        LinearLayoutManager.VERTICAL,
-                        false
-                    )
-                    println("PUNTUACIONES $puntuaciones")
-                    var adaptador = AdapterRanking(puntuaciones)
-                    rankingRecycler.adapter = adaptador
                 }
+
             }
         }
+    }
+
+    private fun getPuntuaciones(): ArrayList<Array<String>> {
+        var puntuaciones = ArrayList<Array<String>>()
+        return puntuaciones
+    }
+
+    private fun getEmail(documento: String): String {
+        return documento.substringAfter('/').substringBefore(',')
+    }
+
+    //hubiera sido mejor arraylist de objeto, asi podria implementar el compareTo
+    private fun ordenarPuntuaciones(puntuaciones: ArrayList<Pair<String, Int>>): ArrayList<Pair<String, Int>> {
+        var array = array(puntuaciones)
+        quicksort(array, 0, array.size - 1)
+        return arrayList(array)!!
+    }
+
+    private fun array(arraylist: ArrayList<Pair<String, Int>>): Array<Pair<String, Int>?> {
+        val resultado = arrayOfNulls<Pair<String, Int>>(arraylist.size)
+        for (i in 0 until arraylist.size) resultado[i] = arraylist.get(i)
+        return resultado
+    }
+
+    private fun arrayList(array: Array<Pair<String, Int>?>): ArrayList<Pair<String, Int>>? {
+        val resultado: ArrayList<Pair<String, Int>> = ArrayList()
+        for (i in array.indices) resultado.add(array[i]!!)
+        return resultado
+    }
+
+    fun quicksort(A: Array<Pair<String, Int>?>, izq: Int, der: Int) {
+        val pivote = A[izq]!!.second // tomamos primer elemento como pivote
+        var i = izq // i realiza la búsqueda de izquierda a derecha
+        var j = der // j realiza la búsqueda de derecha a izquierda
+        while (i < j) {                          // mientras no se crucen las búsquedas
+            while (A[i]!!.second <= pivote && i < j) i++ // busca elemento mayor que pivote
+            while (A[j]!!.second > pivote) j-- // busca elemento menor que pivote
+            if (i < j) {                        // si no se han cruzado
+                intercambiar(A, i, j)
+                //var aux = Pair(A[i]!!.first, A[i]!!.second) // los intercambia
+                //A[i] = A[j]
+                //A[j] = aux
+            }
+        }
+        var aux = A[izq]!!.first
+        A[izq] = A[j]  // se coloca el pivote en su lugar de forma que tendremos
+        A[j] = A[j]!!.copy(first = aux)
+        A[j] = A[j]!!.copy(second = pivote)// los menores a su izquierda y los mayores a su derecha
+        if (izq < j - 1) quicksort(A, izq, j - 1) // ordenamos subarray izquierdo
+        if (j + 1 < der) quicksort(A, j + 1, der) // ordenamos subarray derecho
+    }
+
+    private fun intercambiar(A: Array<Pair<String, Int>?>, i: Int, j: Int) {
+        var aux = Pair(A[i]!!.first, A[i]!!.second) // los intercambia
+        A[i] = A[j]
+        A[j] = aux
     }
 }

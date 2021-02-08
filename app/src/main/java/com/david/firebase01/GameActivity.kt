@@ -162,10 +162,16 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                                         )
                                 )
                             }
-                            //tb puedo ponerlo aaqui supongo como el partida += 1
+                            //tb puedo ponerlo aqui supongo como el partida += 1
                         }/*.addOnSuccessListener {
                             //lo que quiera ejecutar despues de la base de datos, si no pongo el addOnComplete se ejecuta antes que lo de arriba
                         }*/
+                        var id =email+partida
+                        db.collection("users").document("todos").update(
+                            mapOf(
+                                id to puntuacion
+                            )
+                        )
                     }
                 }else{
                     puntuacion += 10
