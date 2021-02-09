@@ -18,10 +18,9 @@ class AdapterRanking(listDatos: ArrayList<Pair<String, Int>>): RecyclerView.Adap
     }
 
     override fun onBindViewHolder(holder: ViewHolderDatos, position: Int) {
-        //establece la comunicacion entre nuestro adaptador y la xlase ViewHolderDatos
-        //holder.asignarDatos(listDatos.get(position).toString() as String)
+        //establece la comunicacion entre nuestro adaptador y la clase ViewHolderDatos
         holder.email.setText(listDatos.get(position).first)
-        holder.dato.setText(listDatos.get(position).second.toString())//TODO NO SE SI NECESAIRO TO STRING
+        holder.dato.setText(listDatos.get(position).second.toString())
         //holder.linea.visibility=View.VISIBLE
 
     }
