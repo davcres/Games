@@ -63,7 +63,7 @@ class RankingActivity: AppCompatActivity() {
         when (item) {
             "Individual" -> {
                 //puntuaciones = ArrayList<Array<String>>() inicializarlo para que no se acumulen las de otros no se si necesario creo que no
-                Toast.makeText(this, item, Toast.LENGTH_LONG).show()
+                //Toast.makeText(this, item, Toast.LENGTH_LONG).show()
                 db.collection("users").document(email ?: "sin registrar").collection("puntuaciones")
                     .document("puntuaciones").get().addOnSuccessListener {
                         var partidas = it.get("numPartidas") as Long?
@@ -89,16 +89,16 @@ class RankingActivity: AppCompatActivity() {
                     }
             }
             "Ciudad" -> {
-                Toast.makeText(this, item, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "AUN NO DISPONIBLE", Toast.LENGTH_LONG).show()
             }
             "Pais" -> {
-                Toast.makeText(this, item, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "AUN NO DISPONIBLE", Toast.LENGTH_LONG).show()
             }
             "Continente" -> {
-                Toast.makeText(this, item, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "AUN NO DISPONIBLE", Toast.LENGTH_LONG).show()
             }
             "Global" -> {
-                Toast.makeText(this, item, Toast.LENGTH_LONG).show()
+                //Toast.makeText(this, item, Toast.LENGTH_LONG).show()
                 db.collection("users").get().addOnSuccessListener { users ->
                     for (documento in users) {
                         documento.reference.collection("puntuaciones").document("puntuaciones")

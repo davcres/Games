@@ -2,6 +2,7 @@ package com.david.firebase01
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri.parse
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_home.*
 
 enum class  ProviderType{
@@ -31,13 +33,18 @@ class HomeActivity : AppCompatActivity() {
         val bundle = intent.extras
         val email = bundle?.getString("email")
         val provider = bundle?.getString("provider")
-        setup(email ?: "", provider ?: "")
+        val photo = bundle?.getString("photo") ?:"null"
+        setup(email ?: "", provider ?: "", photo)
 
         //Guardar los datos del usuario autenticado para otras veces
         //constante con el gestor de preferencias de la app, que es el encargado de gestionar el guardado y la recuperacion de datos del tipo clave-valor
-        val prefs = getSharedPreferences(getString(R.string.prefs_file)/*accedemos al fichero*/, Context.MODE_PRIVATE/*modo de acceso privado*/).edit() //edit para poner en modo de edicion a nuestro share preferences y añadir los datos
+        val prefs = getSharedPreferences(
+            getString(R.string.prefs_file)/*accedemos al fichero*/,
+            Context.MODE_PRIVATE/*modo de acceso privado*/
+        ).edit() //edit para poner en modo de edicion a nuestro share preferences y añadir los datos
         prefs.putString("email", email) //Clave, valor
         prefs.putString("provider", provider)
+        prefs.putString("photo", photo)
         prefs.apply() //para asegurarnos de que se guarden los nuevos datos
         //si los guardamos, tambien tendremos que borrarlos en el momento en el que se cierre sesion(boton cerrar sesion)
 
@@ -51,18 +58,26 @@ class HomeActivity : AppCompatActivity() {
                 val showErrorButton=Firebase.remoteConfig.getBoolean("show_error_button")
                 //string asociado a la config de que texto mostrar en el boton
                 val errorButtonText=Firebase.remoteConfig.getString("error_button_text")
+                //TODO REMOTE CONFIG
                 if(showErrorButton){
-                    btnJugar.visibility= View.VISIBLE
+                    btnForzarError.visibility= View.VISIBLE
+                    btnForzarError.text=errorButtonText
                 }
-                btnForzarError.text=errorButtonText
+
             }
         }
     }
 
-    private fun setup(email: String, provider: String){
+    private fun setup(email: String, provider: String, photo: String){
         title = "Inicio"
         tvEmail.text=email
         tvProvider.text=provider
+        Picasso.get()
+            .load(photo)                    //la imagen que queremos poner
+            .placeholder(R.mipmap.user)     //la imagen que se muestra hasta que se carga la que queremos
+            .error(R.mipmap.user)           //la imagen que se muestra si da error nuestra imagen
+            .transform(CircleTransform())   //forma circular
+            .into(photoIV)                  //donde
 
         btnCerrarSesion.setOnClickListener {
             //Borrado de datos
@@ -82,7 +97,9 @@ class HomeActivity : AppCompatActivity() {
 
         //Guardar datos en base de datos
         btnGuardar.setOnClickListener {
-            db.collection("users"/*nombre de la coleccion para almacenar a todos los usuarios*/).document(email/*clave del documento asociado al usuario de nuestra app => 1 documento por cada email(usuario) y los datos son el valor*/).set( /*set sustituye si hubiera algo antes, con update podemos añadir sin borrar otros campos. si no hay nada, update falla*/
+            db.collection("users"/*nombre de la coleccion para almacenar a todos los usuarios*/).document(
+                email/*clave del documento asociado al usuario de nuestra app => 1 documento por cada email(usuario) y los datos son el valor*/
+            ).set( /*set sustituye si hubiera algo antes, con update podemos añadir sin borrar otros campos. si no hay nada, update falla*/
                 //estos datos que incluimos en el documento del usuario a su vez van en forma de hashmap clave-valor
                 mapOf(
                     "provider"/*clave*/ to provider/*valor*/,
@@ -98,8 +115,8 @@ class HomeActivity : AppCompatActivity() {
         //Recuperar datos de base de datos
         btnRecuperar.setOnClickListener {
             db.collection("users").document(email).get().addOnSuccessListener {
-                tvAddress.setText(it.get("address") as String? ?:"")
-                tvTelefono.setText(it.get("phone") as String? ?:"") //toString si no hay nada te pone null, asi + bonito
+                tvAddress.setText(it.get("address") as String? ?: "")
+                tvTelefono.setText(it.get("phone") as String? ?: "") //toString si no hay nada te pone null, asi + bonito
             }
         }
 

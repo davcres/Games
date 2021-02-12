@@ -2,6 +2,7 @@ package com.david.firebase01
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -29,10 +30,11 @@ import kotlinx.android.synthetic.main.activity_auth.*
 class AuthActivity : AppCompatActivity() {
     private val GOOGLE_SIGN_IN = 100 //ID que queramos
     private val callbackManager = CallbackManager.Factory.create()
+    private var photo: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Splash
-        Thread.sleep(10) //hack
+        //Thread.sleep(10) //hack
         setTheme(R.style.AppTheme)
 
         super.onCreate(savedInstanceState)
@@ -66,6 +68,7 @@ class AuthActivity : AppCompatActivity() {
     override fun onStart(){ //se invoca cada vez que se vuelve a mostrar esta pantalla
         super.onStart()
         lytAuth.visibility=View.VISIBLE
+        photo=null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -87,7 +90,8 @@ class AuthActivity : AppCompatActivity() {
                     FirebaseAuth.getInstance().signInWithCredential(credential)
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
-                                showHome(account.email ?: "", ProviderType.GOOGLE)
+                                photo = account.photoUrl.toString()
+                                showHome(account.email ?: "", ProviderType.GOOGLE, photo!!)
                             } else {
                                 showAlert()
                             }
@@ -113,7 +117,7 @@ class AuthActivity : AppCompatActivity() {
                     ).addOnCompleteListener(this) {
                     if(it.isSuccessful){
                         //? para el caso en el que haya un email vacio
-                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC)
+                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
 
                         //no se podria poner?:
                         //showHome(etEmail.text.toString(), ProviderType.BASIC)
@@ -134,10 +138,10 @@ class AuthActivity : AppCompatActivity() {
                     ).addOnCompleteListener {
                     if(it.isSuccessful){
                         //? para el caso en el que haya un email vacio
-                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC)
+                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
 
                         //no se podria poner?:
-                        //showHome(etEmail.text.toString(), ProviderType.BASIC)
+                        //showHome(etEmail.text.toString(), ProviderType.BASIC, photo)
                     }else{
                         showAlert()
                     }
@@ -183,7 +187,7 @@ class AuthActivity : AppCompatActivity() {
                             FirebaseAuth.getInstance().signInWithCredential(credential)
                                 .addOnCompleteListener {
                                     if (it.isSuccessful) {
-                                        showHome(it.result?.user?.email ?:"",ProviderType.FACEBOOK)
+                                        showHome(it.result?.user?.email ?:"",ProviderType.FACEBOOK, photo ?:"null")
                                     } else {
                                         showAlert()
                                     }
@@ -211,13 +215,14 @@ class AuthActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun showHome(email: String, provider: ProviderType){
+    private fun showHome(email: String, provider: ProviderType, photo: String){
         //Creamos un Intent a la nueva pantalla para navegar a ella, pasando el contexto(nosotros) y la pantalla a la que queremos navegar
         //Una vez se instancia, podemos poner apply para poder pasarle diferentes parametros
         val homeIntent = Intent(this, HomeActivity::class.java).apply{
             //como queremos que se llame la variable, la variable
             putExtra("email", email)
             putExtra("provider", provider.name)
+            putExtra("photo", photo)
         }
         startActivity(homeIntent)
     }
@@ -228,7 +233,7 @@ class AuthActivity : AppCompatActivity() {
         val provider = prefs.getString("provider", null)
         if(email != null && provider != null) {
             lytAuth.visibility= View.INVISIBLE //Para no mostrarlo en caso de que existe la sesion iniciada
-            showHome(email, ProviderType.valueOf(provider))
+            showHome(email, ProviderType.valueOf(provider), photo ?:"null")
         }
     }
 
