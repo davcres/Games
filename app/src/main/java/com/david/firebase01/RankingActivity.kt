@@ -84,7 +84,7 @@ class RankingActivity: AppCompatActivity() {
                             false
                         )
                         puntuaciones = ordenarPuntuaciones(puntuaciones)
-                        var adaptador = AdapterRanking(puntuaciones)
+                        val adaptador = AdapterRanking(puntuaciones)
                         rankingRecycler.adapter = adaptador
                     }
             }
@@ -99,6 +99,7 @@ class RankingActivity: AppCompatActivity() {
             }
             "Global" -> {
                 //Toast.makeText(this, item, Toast.LENGTH_LONG).show()
+                tutorial.setText("")
                 db.collection("users").get().addOnSuccessListener { users ->
                     for (documento in users) {
                         documento.reference.collection("puntuaciones").document("puntuaciones")
@@ -120,7 +121,7 @@ class RankingActivity: AppCompatActivity() {
                                     false
                                 )
                                 puntuaciones = ordenarPuntuaciones(puntuaciones)
-                                var adaptador = AdapterRanking(puntuaciones)
+                                val adaptador = AdapterRanking(puntuaciones)
                                 rankingRecycler.adapter = adaptador
 
                             }
@@ -131,11 +132,6 @@ class RankingActivity: AppCompatActivity() {
         }
     }
 
-    private fun getPuntuaciones(): ArrayList<Array<String>> {
-        var puntuaciones = ArrayList<Array<String>>()
-        return puntuaciones
-    }
-
     private fun getEmail(documento: String): String {
         return documento.substringAfter('/').substringBefore(',')
     }
@@ -143,9 +139,9 @@ class RankingActivity: AppCompatActivity() {
     //hubiera sido mejor arraylist de objeto, asi podria implementar el compareTo
     private fun ordenarPuntuaciones(puntuaciones: ArrayList<Pair<String, Int>>): ArrayList<Pair<String, Int>> {
         if(puntuaciones.size>0) {
-            var array = array(puntuaciones)
+            val array = array(puntuaciones)
             quicksort(array, 0, array.size - 1)
-            return arrayList(array)!!
+            return arrayList(array)
         }else {
             tutorial.setText("Aquí encontrarás tus puntuaciones cuando juegues alguna partida")
             return puntuaciones
@@ -158,7 +154,7 @@ class RankingActivity: AppCompatActivity() {
         return resultado
     }
 
-    private fun arrayList(array: Array<Pair<String, Int>?>): ArrayList<Pair<String, Int>>? {
+    private fun arrayList(array: Array<Pair<String, Int>?>): ArrayList<Pair<String, Int>> {
         val resultado: ArrayList<Pair<String, Int>> = ArrayList()
         for (i in array.indices) resultado.add(array[i]!!)
         return resultado
@@ -172,13 +168,13 @@ class RankingActivity: AppCompatActivity() {
             while (A[i]!!.second <= pivote && i < j) i++ // busca elemento mayor que pivote
             while (A[j]!!.second > pivote) j-- // busca elemento menor que pivote
             if (i < j) {                        // si no se han cruzado
-                intercambiar(A, i, j)
+                intercambiar(A, i, j) //es paso por referencia? si fuera por copia de valor no creo que funcionara
                 //var aux = Pair(A[i]!!.first, A[i]!!.second) // los intercambia
                 //A[i] = A[j]
                 //A[j] = aux
             }
         }
-        var aux = A[izq]!!.first
+        val aux = A[izq]!!.first
         A[izq] = A[j]  // se coloca el pivote en su lugar de forma que tendremos
         A[j] = A[j]!!.copy(first = aux)
         A[j] = A[j]!!.copy(second = pivote)// los menores a su izquierda y los mayores a su derecha
@@ -187,7 +183,7 @@ class RankingActivity: AppCompatActivity() {
     }
 
     private fun intercambiar(A: Array<Pair<String, Int>?>, i: Int, j: Int) {
-        var aux = Pair(A[i]!!.first, A[i]!!.second) // los intercambia
+        val aux = Pair(A[i]!!.first, A[i]!!.second) // los intercambia
         A[i] = A[j]
         A[j] = aux
     }

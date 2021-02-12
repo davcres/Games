@@ -2,7 +2,6 @@ package com.david.firebase01
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri.parse
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -77,7 +76,7 @@ class HomeActivity : AppCompatActivity() {
             .placeholder(R.mipmap.user)     //la imagen que se muestra hasta que se carga la que queremos
             .error(R.mipmap.user)           //la imagen que se muestra si da error nuestra imagen
             .transform(CircleTransform())   //forma circular
-            .into(photoIV)                  //donde
+            .into(photoHome)                  //donde
 
         btnCerrarSesion.setOnClickListener {
             //Borrado de datos

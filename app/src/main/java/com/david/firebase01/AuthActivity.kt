@@ -95,7 +95,7 @@ class AuthActivity : AppCompatActivity() {
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
                                 photo = account.photoUrl.toString()
-                                saveUser(account.email ?:"")
+                                saveUser(account.email ?:"", photo ?:"null")
                                 showHome(account.email ?:"", ProviderType.GOOGLE, photo!!)
                             } else {
                                 showAlert()
@@ -121,7 +121,7 @@ class AuthActivity : AppCompatActivity() {
                         etContrasena.text.toString()
                     ).addOnCompleteListener(this) {
                     if(it.isSuccessful){
-                        saveUser(etEmail.text.toString())
+                        saveUser(etEmail.text.toString(), "null")
                         //? para el caso en el que haya un email vacio
                         showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
 
@@ -270,10 +270,11 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveUser(email: String){
+    private fun saveUser(email: String, photo: String){
         db.collection("users").document(email).set(
             mapOf(
                 "provider" to ProviderType.BASIC,
+                "photo" to photo,
                 "address" to "",
                 "phone" to ""
             )
