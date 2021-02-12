@@ -20,14 +20,18 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import kotlinx.android.synthetic.main.activity_auth.*
+import kotlinx.android.synthetic.main.activity_home.*
 
 class AuthActivity : AppCompatActivity() {
+    //Constante para la base de datos
+    private val db = FirebaseFirestore.getInstance() //instancia de la bd definida en remoto
     private val GOOGLE_SIGN_IN = 100 //ID que queramos
     private val callbackManager = CallbackManager.Factory.create()
     private var photo: String? = null
@@ -91,7 +95,8 @@ class AuthActivity : AppCompatActivity() {
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
                                 photo = account.photoUrl.toString()
-                                showHome(account.email ?: "", ProviderType.GOOGLE, photo!!)
+                                saveUser(account.email ?:"")
+                                showHome(account.email ?:"", ProviderType.GOOGLE, photo!!)
                             } else {
                                 showAlert()
                             }
@@ -116,6 +121,7 @@ class AuthActivity : AppCompatActivity() {
                         etContrasena.text.toString()
                     ).addOnCompleteListener(this) {
                     if(it.isSuccessful){
+                        saveUser(etEmail.text.toString())
                         //? para el caso en el que haya un email vacio
                         showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
 
@@ -140,7 +146,7 @@ class AuthActivity : AppCompatActivity() {
                         //? para el caso en el que haya un email vacio
                         showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
 
-                        //no se podria poner?:
+                        //no se podria poner:
                         //showHome(etEmail.text.toString(), ProviderType.BASIC, photo)
                     }else{
                         showAlert()
@@ -262,5 +268,15 @@ class AuthActivity : AppCompatActivity() {
             val toast = Toast.makeText(this, "Entra en "+url, Toast.LENGTH_LONG)
             toast.show()
         }
+    }
+
+    private fun saveUser(email: String){
+        db.collection("users").document(email).set(
+            mapOf(
+                "provider" to ProviderType.BASIC,
+                "address" to "",
+                "phone" to ""
+            )
+        )
     }
 }

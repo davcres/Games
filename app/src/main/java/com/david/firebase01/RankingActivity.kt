@@ -142,9 +142,14 @@ class RankingActivity: AppCompatActivity() {
 
     //hubiera sido mejor arraylist de objeto, asi podria implementar el compareTo
     private fun ordenarPuntuaciones(puntuaciones: ArrayList<Pair<String, Int>>): ArrayList<Pair<String, Int>> {
-        var array = array(puntuaciones)
-        quicksort(array, 0, array.size - 1)
-        return arrayList(array)!!
+        if(puntuaciones.size>0) {
+            var array = array(puntuaciones)
+            quicksort(array, 0, array.size - 1)
+            return arrayList(array)!!
+        }else {
+            tutorial.setText("Aquí encontrarás tus puntuaciones cuando juegues alguna partida")
+            return puntuaciones
+        }
     }
 
     private fun array(arraylist: ArrayList<Pair<String, Int>>): Array<Pair<String, Int>?> {

@@ -126,7 +126,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         btnJugar.setOnClickListener {
-            btnGuardar.callOnClick()
+            //btnGuardar.callOnClick()
             showGame(email)
         }
 
