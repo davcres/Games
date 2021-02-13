@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_game.*
 import kotlinx.android.synthetic.main.activity_home.*
 
 enum class  ProviderType{
@@ -32,8 +33,8 @@ class HomeActivity : AppCompatActivity() {
         val bundle = intent.extras
         val email = bundle?.getString("email")
         val provider = bundle?.getString("provider")
-        val photo = bundle?.getString("photo") ?:"null"
-        setup(email ?: "", provider ?: "", photo)
+        val photo = bundle?.getString("photo") //?:"null"
+        setup(email ?: "", provider ?: "", photo ?:"null")
 
         //Guardar los datos del usuario autenticado para otras veces
         //constante con el gestor de preferencias de la app, que es el encargado de gestionar el guardado y la recuperacion de datos del tipo clave-valor
@@ -62,7 +63,6 @@ class HomeActivity : AppCompatActivity() {
                     btnForzarError.visibility= View.VISIBLE
                     btnForzarError.text=errorButtonText
                 }
-
             }
         }
     }
@@ -76,7 +76,11 @@ class HomeActivity : AppCompatActivity() {
             .placeholder(R.mipmap.user)     //la imagen que se muestra hasta que se carga la que queremos
             .error(R.mipmap.user)           //la imagen que se muestra si da error nuestra imagen
             .transform(CircleTransform())   //forma circular
-            .into(photoHome)                  //donde
+            .into(photoHome)                //donde
+
+        //personalTV.text=getPersonal()
+        //posicionTV.text=getPosicion()
+        //globalTV.text=getGlobal()
 
         btnCerrarSesion.setOnClickListener {
             //Borrado de datos
@@ -102,8 +106,9 @@ class HomeActivity : AppCompatActivity() {
                 //estos datos que incluimos en el documento del usuario a su vez van en forma de hashmap clave-valor
                 mapOf(
                     "provider"/*clave*/ to provider/*valor*/,
-                    "address" to tvAddress.text.toString(),
-                    "phone" to tvTelefono.text.toString()
+                    "personal" to personalTV.text.toString(),
+                    "posicion" to posicionTV.text.toString(),
+                    "global" to globalTV.text.toString()
                 )
             )
             //si un usuario inicia sesion en diferentes apps, con su email podemos recuperar su info, y da igual en que dispositivo esté
@@ -114,8 +119,9 @@ class HomeActivity : AppCompatActivity() {
         //Recuperar datos de base de datos
         btnRecuperar.setOnClickListener {
             db.collection("users").document(email).get().addOnSuccessListener {
-                tvAddress.setText(it.get("address") as String? ?: "")
-                tvTelefono.setText(it.get("phone") as String? ?: "") //toString si no hay nada te pone null, asi + bonito
+                personalTV.setText(it.get("personal") as String? ?: "")
+                posicionTV.setText(it.get("posicion") as String? ?: "") //toString si no hay nada te pone null, asi + bonito
+                globalTV.setText(it.get("global") as String? ?: "")
             }
         }
 

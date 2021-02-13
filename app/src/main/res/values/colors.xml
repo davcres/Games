@@ -7,5 +7,8 @@
     <color name="red">#FF0000</color>
     <color name="grey">#595959</color>
     <color name="backgroundGame">#84FFFF</color>
+    <color name="oro">#FFCC00</color>
+    <color name="plata">#8A9597</color>
+    <color name="bronce">#CD7F32</color>
 
 </resources>

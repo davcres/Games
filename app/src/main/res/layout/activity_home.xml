@@ -50,28 +50,44 @@
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/tvAddress"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="16dp"
-            android:hint="Calle, numero, piso" />
-
-        <EditText
-            android:id="@+id/tvTelefono"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="16dp"
-            android:hint="Numero de telefono" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
+            <EditText
+                android:id="@+id/personalTV"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:hint="puntuacion" />
+
+            <TextView
+                android:id="@+id/posicionTV"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:hint="posicion" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/globalTV"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:hint="puntuacion global" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
             <Button
                 android:id="@+id/btnGuardar"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
@@ -80,16 +96,9 @@
                 android:textColor="#000000"
                 android:textSize="16dp" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
             <Button
                 android:id="@+id/btnRecuperar"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
@@ -98,16 +107,9 @@
                 android:textColor="#000000"
                 android:textSize="16dp" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
             <Button
                 android:id="@+id/btnEliminar"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
@@ -115,13 +117,6 @@
                 android:text="Eliminar"
                 android:textColor="#000000"
                 android:textSize="16dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnJugar"
@@ -133,17 +128,10 @@
                 android:text="Jugar"
                 android:textColor="@android:color/white"
                 android:textSize="16dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/RankingButton"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
@@ -151,16 +139,10 @@
                 android:text="Ranking"
                 android:textColor="@android:color/white"
                 android:textSize="16dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnCerrarSesion"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
@@ -168,14 +150,6 @@
                 android:text="Cerrar Sesion"
                 android:textColor="@android:color/white"
                 android:textSize="16dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnForzarError"

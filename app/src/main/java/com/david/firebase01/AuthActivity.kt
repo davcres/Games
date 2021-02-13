@@ -38,7 +38,6 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Splash
-        //Thread.sleep(10) //hack
         setTheme(R.style.AppTheme)
 
         super.onCreate(savedInstanceState)
@@ -72,7 +71,7 @@ class AuthActivity : AppCompatActivity() {
     override fun onStart(){ //se invoca cada vez que se vuelve a mostrar esta pantalla
         super.onStart()
         lytAuth.visibility=View.VISIBLE
-        photo=null
+        //photo=null TODO
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -237,6 +236,7 @@ class AuthActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
         val email=prefs.getString("email" /*clave*/, null /*valor defecto*/) //recupera el email de prefs
         val provider = prefs.getString("provider", null)
+        val photo = prefs.getString("photo", "null")
         if(email != null && provider != null) {
             lytAuth.visibility= View.INVISIBLE //Para no mostrarlo en caso de que existe la sesion iniciada
             showHome(email, ProviderType.valueOf(provider), photo ?:"null")
@@ -273,6 +273,7 @@ class AuthActivity : AppCompatActivity() {
     private fun saveUser(email: String, photo: String){
         db.collection("users").document(email).set(
             mapOf(
+                "email" to email,
                 "provider" to ProviderType.BASIC,
                 "photo" to photo,
                 "address" to "",

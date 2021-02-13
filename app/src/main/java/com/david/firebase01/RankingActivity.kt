@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_ranking.*
+import kotlin.collections.ArrayList
 
 
 class RankingActivity: AppCompatActivity() {
@@ -58,22 +59,22 @@ class RankingActivity: AppCompatActivity() {
     }
 
     private fun ranking(item: String) {
-        var puntuaciones = ArrayList<Pair<String, Int>>()
-        var entrada: Pair<String, Int> //par<email, puntuacion>
+        var puntuaciones = ArrayList<Ficha>()
+        var entrada: Ficha //<email, photo, puntuacion>
         when (item) {
             "Individual" -> {
                 //puntuaciones = ArrayList<Array<String>>() inicializarlo para que no se acumulen las de otros no se si necesario creo que no
                 //Toast.makeText(this, item, Toast.LENGTH_LONG).show()
-                db.collection("users").document(email ?: "sin registrar").collection("puntuaciones")
-                    .document("puntuaciones").get().addOnSuccessListener {
+                db.collection("users").document(email ?: "sin registrar").get().addOnSuccessListener { user ->
+                    user.reference.collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
                         var partidas = it.get("numPartidas") as Long?
                             ?: 0 //entra aunque no haya puntuaciones => '?'
                         while (partidas > 0) {
-                            entrada = Pair<String, Int>(
+                            entrada = Ficha(
                                 email ?: "Sin registrar",
+                                user.get("photo") as String? ?: "null",
                                 (it.get(partidas.toString()) as Long).toInt()
                             ) // hay que inicializarlo cada vez para que sean objetos diferentes, si no todos apuntan a uno solo que se actualiza
-
                             puntuaciones.add(entrada)
                             partidas--
                         }
@@ -87,6 +88,7 @@ class RankingActivity: AppCompatActivity() {
                         val adaptador = AdapterRanking(puntuaciones)
                         rankingRecycler.adapter = adaptador
                     }
+                }
             }
             "Ciudad" -> {
                 Toast.makeText(this, "AUN NO DISPONIBLE", Toast.LENGTH_LONG).show()
@@ -104,12 +106,13 @@ class RankingActivity: AppCompatActivity() {
                     for (documento in users) {
                         documento.reference.collection("puntuaciones").document("puntuaciones")
                             .get()
-                            .addOnSuccessListener {
-                                var partidas = it.get("numPartidas") as Long? ?: 0
+                            .addOnSuccessListener { doc ->
+                                var partidas = doc.get("numPartidas") as Long? ?: 0
                                 while (partidas > 0) {
-                                    entrada = Pair<String, Int>(
-                                        getEmail(documento.toString()),
-                                        (it.get(partidas.toString()) as Long).toInt()
+                                    entrada = Ficha(
+                                        documento.get("email") as String? ?:"null",
+                                        documento.get("photo") as String? ?:"null",
+                                        (doc.get(partidas.toString()) as Long).toInt()
                                     ) // hay que inicializarlo cada vez para que sean objetos diferentes, si no todos apuntan a uno solo que se actualiza
                                     puntuaciones.add(entrada)
                                     partidas--
@@ -132,12 +135,23 @@ class RankingActivity: AppCompatActivity() {
         }
     }
 
+    /* ya no la necesito pq guardo el email en un campo del doc
     private fun getEmail(documento: String): String {
         return documento.substringAfter('/').substringBefore(',')
     }
-
+     */
+    private fun ordenarPuntuaciones(puntuaciones: ArrayList<Ficha>): ArrayList<Ficha> {
+        if(puntuaciones.size>0) {
+            tutorial.setText("")
+            return puntuaciones.sortedWith(compareBy({ it.puntuacion })).toMutableList() as ArrayList<Ficha>
+        }else{
+            tutorial.setText("Aquí encontrarás tus puntuaciones cuando juegues alguna partida")
+            return puntuaciones
+        }
+    }
+    /*
     //hubiera sido mejor arraylist de objeto, asi podria implementar el compareTo
-    private fun ordenarPuntuaciones(puntuaciones: ArrayList<Pair<String, Int>>): ArrayList<Pair<String, Int>> {
+    private fun ordenarPuntuaciones(puntuaciones: ArrayList<Ficha>): ArrayList<Ficha> {
         if(puntuaciones.size>0) {
             val array = array(puntuaciones)
             quicksort(array, 0, array.size - 1)
@@ -147,20 +161,22 @@ class RankingActivity: AppCompatActivity() {
             return puntuaciones
         }
     }
-
-    private fun array(arraylist: ArrayList<Pair<String, Int>>): Array<Pair<String, Int>?> {
-        val resultado = arrayOfNulls<Pair<String, Int>>(arraylist.size)
+*/
+    private fun array(arraylist: ArrayList<Ficha>): Array<Ficha?> {
+        val resultado = arrayOfNulls<Ficha>(arraylist.size)
         for (i in 0 until arraylist.size) resultado[i] = arraylist.get(i)
         return resultado
     }
 
-    private fun arrayList(array: Array<Pair<String, Int>?>): ArrayList<Pair<String, Int>> {
-        val resultado: ArrayList<Pair<String, Int>> = ArrayList()
+    private fun arrayList(array: Array<Ficha?>): ArrayList<Ficha> {
+        val resultado: ArrayList<Ficha> = ArrayList()
         for (i in array.indices) resultado.add(array[i]!!)
         return resultado
     }
 
-    fun quicksort(A: Array<Pair<String, Int>?>, izq: Int, der: Int) {
+
+/*
+    fun quicksort(A: Array<Ficha?>, izq: Int, der: Int) {
         val pivote = A[izq]!!.second // tomamos primer elemento como pivote
         var i = izq // i realiza la búsqueda de izquierda a derecha
         var j = der // j realiza la búsqueda de derecha a izquierda
@@ -187,4 +203,6 @@ class RankingActivity: AppCompatActivity() {
         A[i] = A[j]
         A[j] = aux
     }
+    */
+
 }
