@@ -25,6 +25,8 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
+        title="Game"
+
         //recuperar los parametros de la otra activity
         val bundle = intent.extras
         email = bundle?.getString("email")

@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
@@ -12,7 +11,8 @@
         android:icon="@mipmap/candado"
         android:label="Firebase"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.AppCompat.NoActionBar"> <!-- para que no se muestre en toda la app-->
+        <activity android:name=".ProfileActivity"/>
         <activity android:name=".RankingActivity"/>
         <activity android:name=".GameActivity" />
         <activity android:name=".HomeActivity" />
@@ -21,7 +21,6 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

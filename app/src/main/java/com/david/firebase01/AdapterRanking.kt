@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_home.*
 
 /**
  * Adaptador para el RecyclerView de Ranking
@@ -25,21 +26,29 @@ class AdapterRanking(listDatos: ArrayList<Ficha>): RecyclerView.Adapter<AdapterR
     override fun onBindViewHolder(holder: ViewHolderDatos, position: Int) {
         //establece la comunicacion entre nuestro adaptador y la clase ViewHolderDatos
         holder.email.setText(listDatos.get(position).email)
-        Picasso.get()
+        /*Picasso.get()
             .load(listDatos.get(position).photo)
             .placeholder(R.mipmap.user)
             .error(R.mipmap.user)
             .transform(CircleTransform())
-            .into(holder.photo)
+            .into(holder.photo)*/
+        if(listDatos.get(position).photo.startsWith("http"))
+            Picasso.get().load(listDatos.get(position).photo).error(R.mipmap.user).transform(CircleTransform()).into(holder.photo)
+        else
+            Picasso.get().load(R.mipmap.user).transform(CircleTransform()).into(holder.photo)
         holder.puntuacion.setText(listDatos.get(position).puntuacion.toString())
         cont++
+        println("CONT: $cont")
         if(cont==1) {
+            println("ORO: $cont")
             holder.layout.setBackgroundColor(Color.parseColor("#FFCC00"))
         }
         if(cont==2) {
+            println("PLATA: $cont")
             holder.layout.setBackgroundColor(Color.parseColor("#8A9597"))
         }
         if(cont==3) {
+            println("BRONCE: $cont")
             holder.layout.setBackgroundColor(Color.parseColor("#CD7F32"))
         }
     }

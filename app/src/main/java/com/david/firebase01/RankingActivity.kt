@@ -20,6 +20,8 @@ class RankingActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ranking)
 
+        title="Ranking"
+
         //recuperar los parametros de la otra activity
         val bundle = intent.extras
         email = bundle?.getString("email")
@@ -63,12 +65,9 @@ class RankingActivity: AppCompatActivity() {
         var entrada: Ficha //<email, photo, puntuacion>
         when (item) {
             "Individual" -> {
-                //puntuaciones = ArrayList<Array<String>>() inicializarlo para que no se acumulen las de otros no se si necesario creo que no
-                //Toast.makeText(this, item, Toast.LENGTH_LONG).show()
                 db.collection("users").document(email ?: "sin registrar").get().addOnSuccessListener { user ->
                     user.reference.collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
-                        var partidas = it.get("numPartidas") as Long?
-                            ?: 0 //entra aunque no haya puntuaciones => '?'
+                        var partidas = it.get("numPartidas") as Long? ?: 0 //entra aunque no haya puntuaciones => '?'
                         while (partidas > 0) {
                             entrada = Ficha(
                                 email ?: "Sin registrar",
@@ -100,46 +99,37 @@ class RankingActivity: AppCompatActivity() {
                 Toast.makeText(this, "AUN NO DISPONIBLE", Toast.LENGTH_LONG).show()
             }
             "Global" -> {
-                //Toast.makeText(this, item, Toast.LENGTH_LONG).show()
                 tutorial.setText("")
                 db.collection("users").get().addOnSuccessListener { users ->
                     for (documento in users) {
                         documento.reference.collection("puntuaciones").document("puntuaciones")
-                            .get()
-                            .addOnSuccessListener { doc ->
-                                var partidas = doc.get("numPartidas") as Long? ?: 0
-                                while (partidas > 0) {
-                                    entrada = Ficha(
-                                        documento.get("email") as String? ?:"null",
-                                        documento.get("photo") as String? ?:"null",
-                                        (doc.get(partidas.toString()) as Long).toInt()
-                                    ) // hay que inicializarlo cada vez para que sean objetos diferentes, si no todos apuntan a uno solo que se actualiza
-                                    puntuaciones.add(entrada)
-                                    partidas--
-                                }
-                            }.addOnSuccessListener {
-                                rankingRecycler.layoutManager = LinearLayoutManager(
-                                    this,
-                                    LinearLayoutManager.VERTICAL,
-                                    false
-                                )
-                                puntuaciones = ordenarPuntuaciones(puntuaciones)
-                                val adaptador = AdapterRanking(puntuaciones)
-                                rankingRecycler.adapter = adaptador
-
+                        .get().addOnSuccessListener { doc ->
+                            var partidas = doc.get("numPartidas") as Long? ?: 0
+                            while (partidas > 0) {
+                                entrada = Ficha(
+                                    documento.get("email") as String? ?:"null",
+                                    documento.get("photo") as String? ?:"null",
+                                    (doc.get(partidas.toString()) as Long).toInt()
+                                ) // hay que inicializarlo cada vez para que sean objetos diferentes, si no todos apuntan a uno solo que se actualiza
+                                puntuaciones.add(entrada)
+                                partidas--
                             }
+                        }.addOnSuccessListener {
+                            rankingRecycler.layoutManager = LinearLayoutManager(
+                                this,
+                                LinearLayoutManager.VERTICAL,
+                                false
+                            )
+                            puntuaciones = ordenarPuntuaciones(puntuaciones)
+                            val adaptador = AdapterRanking(puntuaciones)
+                            rankingRecycler.adapter = adaptador
+                        }
                     }
                 }
-
             }
         }
     }
 
-    /* ya no la necesito pq guardo el email en un campo del doc
-    private fun getEmail(documento: String): String {
-        return documento.substringAfter('/').substringBefore(',')
-    }
-     */
     private fun ordenarPuntuaciones(puntuaciones: ArrayList<Ficha>): ArrayList<Ficha> {
         if(puntuaciones.size>0) {
             tutorial.setText("")
@@ -161,7 +151,7 @@ class RankingActivity: AppCompatActivity() {
             return puntuaciones
         }
     }
-*/
+
     private fun array(arraylist: ArrayList<Ficha>): Array<Ficha?> {
         val resultado = arrayOfNulls<Ficha>(arraylist.size)
         for (i in 0 until arraylist.size) resultado[i] = arraylist.get(i)
@@ -174,8 +164,6 @@ class RankingActivity: AppCompatActivity() {
         return resultado
     }
 
-
-/*
     fun quicksort(A: Array<Ficha?>, izq: Int, der: Int) {
         val pivote = A[izq]!!.second // tomamos primer elemento como pivote
         var i = izq // i realiza la búsqueda de izquierda a derecha

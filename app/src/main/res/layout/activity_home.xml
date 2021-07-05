@@ -35,11 +35,11 @@
                     android:text="Email" />
 
                 <TextView
-                    android:id="@+id/tvProvider"
+                    android:id="@+id/tvUsername"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginTop="16dp"
-                    android:text="Proveedor" />
+                    android:text="Username" />
             </LinearLayout>
 
             <ImageView
@@ -55,43 +55,40 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <EditText
+            <TextView
                 android:id="@+id/personalTV"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="438dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="16dp"
-                android:layout_weight="1"
-                android:hint="puntuacion" />
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/posicionTV"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
                 android:layout_marginTop="16dp"
-                android:layout_weight="1"
-                android:hint="posicion" />
+                android:layout_weight="1" />
         </LinearLayout>
 
-        <EditText
+        <TextView
             android:id="@+id/globalTV"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="16dp"
-            android:layout_weight="1"
-            android:hint="puntuacion global" />
+            android:layout_weight="1" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
+<!--
             <Button
                 android:id="@+id/btnGuardar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="#FFFFFF"
+                android:background="@drawable/profile_shape"
                 android:text="Guardar"
                 android:textColor="#000000"
                 android:textSize="16dp" />
@@ -101,8 +98,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_weight="1"
-                android:background="#FFFFFF"
+                android:background="@drawable/profile_shape"
                 android:text="Recuperar"
                 android:textColor="#000000"
                 android:textSize="16dp" />
@@ -112,21 +108,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_weight="1"
-                android:background="#FFFFFF"
+                android:background="@drawable/profile_shape"
                 android:text="Eliminar"
                 android:textColor="#000000"
                 android:textSize="16dp" />
-
+-->
             <Button
                 android:id="@+id/btnJugar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="@android:color/holo_green_light"
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="#00FF00"
                 android:text="Jugar"
-                android:textColor="@android:color/white"
+                android:textColor="#000000"
                 android:textSize="16dp" />
 
             <Button
@@ -135,9 +131,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="@android:color/holo_blue_dark"
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="@android:color/holo_blue_dark"
                 android:text="Ranking"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textSize="16dp" />
 
             <Button
@@ -146,9 +143,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="@color/colorAccent"
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="@color/red"
                 android:text="Cerrar Sesion"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textSize="16dp" />
 
             <Button
@@ -157,9 +155,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="@color/red"
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="@color/black"
                 android:text="Forzar Error"
-                android:textColor="@android:color/white"
+                android:textColor="#FF0000"
                 android:textSize="16dp" />
         </LinearLayout>
 

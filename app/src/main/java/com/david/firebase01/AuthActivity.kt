@@ -43,6 +43,9 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
+        //En esta activity si quiero ocultar la ToolBar lo tengo que hacer manualmente ya que estamos diciendo que tiene el Splash Theme en vez de NoActionBar Theme
+        getSupportActionBar()?.hide()
+
         //Analytics Event
         val analytics = FirebaseAnalytics.getInstance(this)
         val bundle = Bundle()
@@ -71,7 +74,7 @@ class AuthActivity : AppCompatActivity() {
     override fun onStart(){ //se invoca cada vez que se vuelve a mostrar esta pantalla
         super.onStart()
         lytAuth.visibility=View.VISIBLE
-        //photo=null TODO
+        photo=null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -94,7 +97,7 @@ class AuthActivity : AppCompatActivity() {
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
                                 photo = account.photoUrl.toString()
-                                saveUser(account.email ?:"", photo ?:"null")
+                                saveUser(account.email ?:"", ProviderType.GOOGLE,photo ?:"null")
                                 showHome(account.email ?:"", ProviderType.GOOGLE, photo!!)
                             } else {
                                 showAlert()
@@ -108,7 +111,7 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun setup(){
-        title = "Autenticacion" //cambia el titulo de la pantalla con la propiedad title
+        title = "Log in" //cambia el titulo de la pantalla con la propiedad title
 
         //Al pulsar en btn registrar se ejecuta lo que hay aqui
         btnRegistrar.setOnClickListener{
@@ -120,7 +123,7 @@ class AuthActivity : AppCompatActivity() {
                         etContrasena.text.toString()
                     ).addOnCompleteListener(this) {
                     if(it.isSuccessful){
-                        saveUser(etEmail.text.toString(), "null")
+                        saveUser(etEmail.text.toString(), ProviderType.BASIC,"null")
                         //? para el caso en el que haya un email vacio
                         showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
 
@@ -236,7 +239,9 @@ class AuthActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
         val email=prefs.getString("email" /*clave*/, null /*valor defecto*/) //recupera el email de prefs
         val provider = prefs.getString("provider", null)
+        //println("PHOTOOOO $photo")
         val photo = prefs.getString("photo", "null")
+        //println("PHOTOOOO $photo")
         if(email != null && provider != null) {
             lytAuth.visibility= View.INVISIBLE //Para no mostrarlo en caso de que existe la sesion iniciada
             showHome(email, ProviderType.valueOf(provider), photo ?:"null")
@@ -270,15 +275,30 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveUser(email: String, photo: String){
-        db.collection("users").document(email).set(
-            mapOf(
-                "email" to email,
-                "provider" to ProviderType.BASIC,
-                "photo" to photo,
-                "address" to "",
-                "phone" to ""
-            )
-        )
+    private fun saveUser(email: String, provider: ProviderType, photo: String){
+        db.collection("users").document(email).get().addOnSuccessListener {
+            //creo que el if.exists() no hace falta
+            /*if(it.exists()){
+                db.collection("users").document(email).update(
+                    mapOf(
+                        "email" to email,
+                        "provider" to provider,
+                        "photo" to photo
+                        //"username" to "username"
+                    )
+                )
+            }*/
+            if(!it.exists()){
+                db.collection("users").document(email).set(
+                    mapOf(
+                        "email" to email,
+                        "provider" to ProviderType.BASIC,
+                        "photo" to photo,
+                        "username" to "username"
+                    )
+                )
+            }
+        }
+
     }
 }
