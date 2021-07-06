@@ -1,4 +1,4 @@
-package com.david.firebase01
+package com.david.games
 
 import android.provider.ContactsContract.CommonDataKinds.Email
 

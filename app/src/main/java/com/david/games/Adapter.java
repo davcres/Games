@@ -1,4 +1,4 @@
-package com.david.firebase01;
+package com.david.games;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.david.games.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

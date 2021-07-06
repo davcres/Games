@@ -1,4 +1,4 @@
-package com.david.firebase01
+package com.david.games
 
 import android.content.Context
 import android.content.Intent
@@ -113,7 +113,7 @@ class HomeActivity : AppCompatActivity() {
             prefs.clear() //Para borrar todas las preferencias que tenemos guardadas en la App
             prefs.apply()
             //Para cerrar sesion en facebook
-            if(provider==ProviderType.FACEBOOK.name){
+            if(provider== ProviderType.FACEBOOK.name){
                 LoginManager.getInstance().logOut()
             }
             //cierra sesion
