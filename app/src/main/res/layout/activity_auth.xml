@@ -47,7 +47,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="@color/colorPrimary"
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="@color/colorPrimary2"
                 android:text="Registrar"
                 android:textColor="@android:color/white" />
 
@@ -59,7 +60,8 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
-                android:background="@color/colorPrimaryDark"
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="@color/colorPrimaryDark"
                 android:text="Acceder"
                 android:textColor="@android:color/white" />
         </LinearLayout>
@@ -71,7 +73,8 @@
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:background="@android:color/white"
+            android:background="@drawable/profile_shape"
+            android:backgroundTint="@color/colorPrimary"
             android:drawableStart="@mipmap/google"
             android:paddingStart="16dp"
             android:paddingTop="8dp"
@@ -81,6 +84,7 @@
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp" />
 
+        <!--
         <Button
             android:id="@+id/btnFacebook"
             android:layout_width="match_parent"
@@ -88,7 +92,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:background="@android:color/white"
+            android:background="@drawable/profile_shape"
             android:drawableStart="@mipmap/facebook"
             android:paddingStart="16dp"
             android:paddingTop="8dp"
@@ -97,5 +101,6 @@
             android:textAlignment="textStart"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp" />/>
+        -->
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+       </androidx.constraintlayout.widget.ConstraintLayout>

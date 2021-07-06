@@ -4,25 +4,29 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/candado"
-        android:label="Firebase"
+        android:icon="@mipmap/icon"
+        android:label="Games"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".HomeActivity"></activity>
+        android:theme="@style/Theme.AppCompat.NoActionBar"> <!-- para que no se muestre en toda la app-->
+        <activity android:name=".ProfileActivity"/>
+        <activity android:name=".RankingActivity"/>
+        <activity android:name=".GameActivity" />
+        <activity android:name=".HomeActivity" />
         <activity
             android:name=".AuthActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <activity android:name="com.facebook.FacebookActivity"

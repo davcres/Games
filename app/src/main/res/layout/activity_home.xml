@@ -7,6 +7,7 @@
     tools:context=".HomeActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -17,47 +18,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:text="Email" />
-
-        <TextView
-            android:id="@+id/tvProvider"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="16dp"
-            android:text="Proveedor" />
-
-        <EditText
-            android:id="@+id/tvAddress"
-            android:layout_width="match_parent"
-            android:layout_marginTop="16dp"
-            android:layout_height="40dp"
-            android:hint="Calle, numero, piso" />
-
-        <EditText
-            android:id="@+id/tvTelefono"
-            android:layout_width="match_parent"
-            android:layout_marginTop="16dp"
-            android:layout_height="40dp"
-            android:hint="Numero de telefono" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnGuardar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_weight="1"
-                android:background="#FFFFFF"
-                android:textColor="#000000"
-                android:text="Guardar" />
+            <LinearLayout
+                android:layout_width="249dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:text="Email" />
+
+                <TextView
+                    android:id="@+id/tvUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Username" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/photoHome"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
         </LinearLayout>
 
@@ -65,57 +54,100 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/personalTV"
+                android:layout_width="438dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/posicionTV"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/globalTV"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+<!--
+            <Button
+                android:id="@+id/btnGuardar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:background="@drawable/profile_shape"
+                android:text="Guardar"
+                android:textColor="#000000"
+                android:textSize="16dp" />
 
             <Button
                 android:id="@+id/btnRecuperar"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_weight="1"
-                android:background="#FFFFFF"
+                android:background="@drawable/profile_shape"
+                android:text="Recuperar"
                 android:textColor="#000000"
-                android:text="Recuperar" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+                android:textSize="16dp" />
 
             <Button
                 android:id="@+id/btnEliminar"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/profile_shape"
+                android:text="Eliminar"
+                android:textColor="#000000"
+                android:textSize="16dp" />
+-->
+            <Button
+                android:id="@+id/btnJugar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="#FFFFFF"
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="#00FF00"
+                android:text="Jugar"
                 android:textColor="#000000"
-                android:text="Eliminar" />
+                android:textSize="16dp" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            <Button
+                android:id="@+id/RankingButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="@android:color/holo_blue_dark"
+                android:text="Ranking"
+                android:textColor="@android:color/black"
+                android:textSize="16dp" />
 
             <Button
                 android:id="@+id/btnCerrarSesion"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="@color/colorAccent"
-                android:textColor="@android:color/white"
-                android:text="Cerrar Sesion" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="@color/red"
+                android:text="Cerrar Sesion"
+                android:textColor="@android:color/black"
+                android:textSize="16dp" />
 
             <Button
                 android:id="@+id/btnForzarError"
@@ -123,9 +155,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                android:background="@color/red"
+                android:background="@drawable/profile_shape"
+                android:backgroundTint="@color/black"
                 android:text="Forzar Error"
-                android:textColor="@android:color/white"
+                android:textColor="#FF0000"
                 android:textSize="16dp" />
         </LinearLayout>
 

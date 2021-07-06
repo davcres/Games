@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- cada elemento de la lista ranking, es una instancia de item_ranking.xml-->
+    <!-- para poder hacer esto, necesitamos el adaptador-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/photoRanking"
+                android:layout_width="70dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingStart="10dp"
+                app:srcCompat="@mipmap/user" />
+
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="260dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:gravity="start|center_vertical"
+                android:text="email"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/puntuacion"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="right"
+                android:gravity="center_vertical|right"
+                android:paddingRight="20dp"
+                android:text="999"
+                android:textAlignment="gravity"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/linea"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/email"
+            android:background="@color/grey" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

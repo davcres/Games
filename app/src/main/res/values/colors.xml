@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#039BE5</color>
+    <color name="colorPrimary">#74c3b3</color>
     <color name="colorPrimaryDark">#2C384A</color>
+    <color name="colorPrimary2">#039BE5</color>
     <color name="colorAccent">#F57C00</color>
     <color name="background">#ECEFF1</color>
     <color name="red">#FF0000</color>
+    <color name="grey">#595959</color>
+    <color name="backgroundGame">#84FFFF</color>
+    <color name="oro">#FFCC00</color>
+    <color name="plata">#8A9597</color>
+    <color name="bronce">#CD7F32</color>
+    <color name="blue">#0A6BC7</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
 
 </resources>

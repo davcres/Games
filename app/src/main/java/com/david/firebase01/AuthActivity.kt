@@ -2,6 +2,7 @@ package com.david.firebase01
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -19,24 +20,31 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import kotlinx.android.synthetic.main.activity_auth.*
+import kotlinx.android.synthetic.main.activity_home.*
 
 class AuthActivity : AppCompatActivity() {
+    //Constante para la base de datos
+    private val db = FirebaseFirestore.getInstance() //instancia de la bd definida en remoto
     private val GOOGLE_SIGN_IN = 100 //ID que queramos
     private val callbackManager = CallbackManager.Factory.create()
+    private var photo: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Splash
-        Thread.sleep(250) //hack
         setTheme(R.style.AppTheme)
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
+
+        //En esta activity si quiero ocultar la ToolBar lo tengo que hacer manualmente ya que estamos diciendo que tiene el Splash Theme en vez de NoActionBar Theme
+        getSupportActionBar()?.hide()
 
         //Analytics Event
         val analytics = FirebaseAnalytics.getInstance(this)
@@ -66,6 +74,7 @@ class AuthActivity : AppCompatActivity() {
     override fun onStart(){ //se invoca cada vez que se vuelve a mostrar esta pantalla
         super.onStart()
         lytAuth.visibility=View.VISIBLE
+        photo=null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -87,7 +96,9 @@ class AuthActivity : AppCompatActivity() {
                     FirebaseAuth.getInstance().signInWithCredential(credential)
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
-                                showHome(account.email ?: "", ProviderType.GOOGLE)
+                                photo = account.photoUrl.toString()
+                                saveUser(account.email ?:"", ProviderType.GOOGLE,photo ?:"null")
+                                showHome(account.email ?:"", ProviderType.GOOGLE, photo!!)
                             } else {
                                 showAlert()
                             }
@@ -100,20 +111,21 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun setup(){
-        title = "Autenticacion" //cambia el titulo de la pantalla con la propiedad title
+        title = "Log in" //cambia el titulo de la pantalla con la propiedad title
 
         //Al pulsar en btn registrar se ejecuta lo que hay aqui
         btnRegistrar.setOnClickListener{
             if (etEmail.text.isNotEmpty() && etContrasena.text.isNotEmpty()){
-                print(etEmail.text.toString() + ", " + etContrasena.text.toString())
+                //print(etEmail.text.toString() + ", " + etContrasena.text.toString())
                 FirebaseAuth.getInstance()
                     .createUserWithEmailAndPassword(
                         etEmail.text.toString(),
                         etContrasena.text.toString()
                     ).addOnCompleteListener(this) {
                     if(it.isSuccessful){
+                        saveUser(etEmail.text.toString(), ProviderType.BASIC,"null")
                         //? para el caso en el que haya un email vacio
-                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC)
+                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
 
                         //no se podria poner?:
                         //showHome(etEmail.text.toString(), ProviderType.BASIC)
@@ -134,10 +146,10 @@ class AuthActivity : AppCompatActivity() {
                     ).addOnCompleteListener {
                     if(it.isSuccessful){
                         //? para el caso en el que haya un email vacio
-                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC)
+                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
 
-                        //no se podria poner?:
-                        //showHome(etEmail.text.toString(), ProviderType.BASIC)
+                        //no se podria poner:
+                        //showHome(etEmail.text.toString(), ProviderType.BASIC, photo)
                     }else{
                         showAlert()
                     }
@@ -165,8 +177,8 @@ class AuthActivity : AppCompatActivity() {
             startActivityForResult(googleClient.signInIntent, GOOGLE_SIGN_IN)
             //como iniciamos un activity en la que esperamos que nos respondan algo, deberos reimplementar onActivityResult
         }
-
-        btnFacebook.setOnClickListener {
+ //FACEBOOK
+/*        btnFacebook.setOnClickListener {
             //Para abrir la pantalla de autenticacion nativa de facebook
             LoginManager.getInstance().logInWithReadPermissions(
                 this,
@@ -183,7 +195,7 @@ class AuthActivity : AppCompatActivity() {
                             FirebaseAuth.getInstance().signInWithCredential(credential)
                                 .addOnCompleteListener {
                                     if (it.isSuccessful) {
-                                        showHome(it.result?.user?.email ?:"",ProviderType.FACEBOOK)
+                                        showHome(it.result?.user?.email ?:"",ProviderType.FACEBOOK, photo ?:"null")
                                     } else {
                                         showAlert()
                                     }
@@ -200,6 +212,7 @@ class AuthActivity : AppCompatActivity() {
                     }
                 })
         }
+        */
     }
 
     private fun showAlert(){
@@ -211,13 +224,14 @@ class AuthActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun showHome(email: String, provider: ProviderType){
+    private fun showHome(email: String, provider: ProviderType, photo: String){
         //Creamos un Intent a la nueva pantalla para navegar a ella, pasando el contexto(nosotros) y la pantalla a la que queremos navegar
         //Una vez se instancia, podemos poner apply para poder pasarle diferentes parametros
         val homeIntent = Intent(this, HomeActivity::class.java).apply{
             //como queremos que se llame la variable, la variable
             putExtra("email", email)
             putExtra("provider", provider.name)
+            putExtra("photo", photo)
         }
         startActivity(homeIntent)
     }
@@ -226,9 +240,12 @@ class AuthActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
         val email=prefs.getString("email" /*clave*/, null /*valor defecto*/) //recupera el email de prefs
         val provider = prefs.getString("provider", null)
+        //println("PHOTOOOO $photo")
+        val photo = prefs.getString("photo", "null")
+        //println("PHOTOOOO $photo")
         if(email != null && provider != null) {
             lytAuth.visibility= View.INVISIBLE //Para no mostrarlo en caso de que existe la sesion iniciada
-            showHome(email, ProviderType.valueOf(provider))
+            showHome(email, ProviderType.valueOf(provider), photo ?:"null")
         }
     }
 
@@ -257,5 +274,32 @@ class AuthActivity : AppCompatActivity() {
             val toast = Toast.makeText(this, "Entra en "+url, Toast.LENGTH_LONG)
             toast.show()
         }
+    }
+
+    private fun saveUser(email: String, provider: ProviderType, photo: String){
+        db.collection("users").document(email).get().addOnSuccessListener {
+            //creo que el if.exists() no hace falta
+            /*if(it.exists()){
+                db.collection("users").document(email).update(
+                    mapOf(
+                        "email" to email,
+                        "provider" to provider,
+                        "photo" to photo
+                        //"username" to "username"
+                    )
+                )
+            }*/
+            if(!it.exists()){
+                db.collection("users").document(email).set(
+                    mapOf(
+                        "email" to email,
+                        "provider" to ProviderType.BASIC,
+                        "photo" to photo,
+                        "username" to "username"
+                    )
+                )
+            }
+        }
+
     }
 }
