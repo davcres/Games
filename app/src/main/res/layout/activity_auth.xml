@@ -83,6 +83,7 @@
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp" />
 
+        <!--
         <Button
             android:id="@+id/btnFacebook"
             android:layout_width="match_parent"
@@ -99,5 +100,6 @@
             android:textAlignment="textStart"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp" />/>
+        -->
     </LinearLayout>
        </androidx.constraintlayout.widget.ConstraintLayout>

@@ -34,7 +34,7 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
         //recuperar el num de partidas de la bd
         db.collection("users").document(email ?:"sin registrar").collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
             partida = it.get("numPartidas") as Long? ?:0
-            if(partida==0.toLong())
+            if(partida == 0.toLong())
                 partida=1
             else
                 partida += 1 //sumamos 1 para que guarde la siguiente partida a la ultima echada
@@ -42,6 +42,30 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
 
         clickers()
         generarParejas()
+    }
+
+
+    private fun reset() {
+        elementos = 16
+        puntuacion = 0
+        puntuacionTV.text = "Puntuacion: $puntuacion"
+
+        button1.visibility = View.VISIBLE
+        button2.visibility = View.VISIBLE
+        button3.visibility = View.VISIBLE
+        button4.visibility = View.VISIBLE
+        button5.visibility = View.VISIBLE
+        button6.visibility = View.VISIBLE
+        button7.visibility = View.VISIBLE
+        button8.visibility = View.VISIBLE
+        button9.visibility = View.VISIBLE
+        button10.visibility = View.VISIBLE
+        button11.visibility = View.VISIBLE
+        button12.visibility = View.VISIBLE
+        button13.visibility = View.VISIBLE
+        button14.visibility = View.VISIBLE
+        button15.visibility = View.VISIBLE
+        button16.visibility = View.VISIBLE
     }
 
     private fun clickers(){
@@ -61,6 +85,24 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
         button14.setOnClickListener(this)
         button15.setOnClickListener(this)
         button16.setOnClickListener(this)
+
+        btnAgain.setOnClickListener {
+            reset()
+            generarParejas()
+            menu.visibility = View.INVISIBLE
+        }
+
+        btnAtras.setOnClickListener {
+            onBackPressed()
+        }
+
+        replay.setOnClickListener {
+            Handler().postDelayed(Runnable {
+                reset()
+                generarParejas()
+                menu.visibility = View.INVISIBLE
+            }, 1000)
+        }
     }
 
     override fun onClick(view: View) {
@@ -121,16 +163,17 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
             null -> {
                 reiniciar()
                 b = button
-                setColor(b, "#00ffff")  //cian
+                setColor(b, "#00FFFF")  //cian
             }
             button -> {
                 setColor(button, "#84FFFF")
                 b = null
+                print("QUE ES ESTO (GameActivity.kt:171)")
             }
             else -> {
                 b1Ant = b //para que si se pulsa otro boton rapido no se lie, y b sea null cuanto antes
                 b2Ant = button //b y button van a cambiar antes, b1Ant y b2Ant tardan mas
-                b=null
+                b = null
                 setTextSize(b1Ant, 30F)
                 setTextSize(b2Ant, 30F)
                 if(b2Ant?.text.toString() == b1Ant!!.text.toString()) {
@@ -143,9 +186,14 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                     Handler().postDelayed(Runnable {
                         borrar1!!.visibility = View.INVISIBLE
                         borrar2?.visibility = View.INVISIBLE
+                        //reestablecemos los botones por si le da a replay
+                        reiniciar()
                     }, 1000)
                     if(elementos==0){
-                        puntuacionTV.setText("Tu puntuación es: $puntuacion puntos")
+                        //puntuacionTV.text = "Tu puntuacion es: $puntuacion puntos"
+                        Handler().postDelayed(Runnable {
+                            menu.visibility = View.VISIBLE
+                        }, 1000)
                         db.collection("users").document(email ?: "sin identificar").collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
                             if(it.exists()){
                                 db.collection("users").document(email ?: "sin identificar")
@@ -177,7 +225,7 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                     }
                 }else{
                     puntuacion += 10
-                    puntuacionTV.setText("punt: $puntuacion-part $partida")
+                    puntuacionTV.text = "Puntuacion: $puntuacion puntos"
                     setColor(b1Ant, "#FF0000") //red
                     setColor(b2Ant, "#FF0000") //red
                     Handler().postDelayed(Runnable {
@@ -228,14 +276,14 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
         if(list.size>1) {
             val n = Random.nextInt(0..elementos)
             //println("$n, $list, ${list.get(n)}")
-            b.setText(list.get(n).toString())
+            b.text = list.get(n).toString()
             list.remove(list.get(n))
             elementos--
         }else
-            b.setText(list.get(0).toString())
+            b.text = list.get(0).toString()
     }
 
     fun Random.nextInt(range: IntRange): Int {
-        return range.start + nextInt(range.last - range.start)
+        return range.first + nextInt(range.last - range.first)
     }
 }

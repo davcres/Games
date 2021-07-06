@@ -177,8 +177,8 @@ class AuthActivity : AppCompatActivity() {
             startActivityForResult(googleClient.signInIntent, GOOGLE_SIGN_IN)
             //como iniciamos un activity en la que esperamos que nos respondan algo, deberos reimplementar onActivityResult
         }
-
-        btnFacebook.setOnClickListener {
+ //FACEBOOK
+/*        btnFacebook.setOnClickListener {
             //Para abrir la pantalla de autenticacion nativa de facebook
             LoginManager.getInstance().logInWithReadPermissions(
                 this,
@@ -212,6 +212,7 @@ class AuthActivity : AppCompatActivity() {
                     }
                 })
         }
+        */
     }
 
     private fun showAlert(){

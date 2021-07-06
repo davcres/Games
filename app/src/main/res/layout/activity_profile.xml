@@ -113,7 +113,7 @@
             android:textAlignment="viewStart"/>
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/btnLogOut"
             android:layout_width="350dp"
             android:layout_height="70dp"
             android:layout_below="@+id/button3"

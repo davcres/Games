@@ -78,6 +78,8 @@ class RankingActivity: AppCompatActivity() {
                             partidas--
                         }
                     }.addOnSuccessListener {
+
+                        //con recycledView (AdapterRanking.kt)
                         rankingRecycler.layoutManager = LinearLayoutManager(
                             this,
                             LinearLayoutManager.VERTICAL,
@@ -86,6 +88,13 @@ class RankingActivity: AppCompatActivity() {
                         puntuaciones = ordenarPuntuaciones(puntuaciones)
                         val adaptador = AdapterRanking(puntuaciones)
                         rankingRecycler.adapter = adaptador
+
+
+                        //con listView (Adapter.java)
+                        /*
+                        puntuaciones = ordenarPuntuaciones(puntuaciones)
+                        val adaptador = Adapter(this, R.layout.item_ranking, puntuaciones)
+                        rankingRecycler.adapter = adaptador*/
                     }
                 }
             }
@@ -115,6 +124,8 @@ class RankingActivity: AppCompatActivity() {
                                 partidas--
                             }
                         }.addOnSuccessListener {
+
+                            //con RecycledView (AdapterRanking.kt)
                             rankingRecycler.layoutManager = LinearLayoutManager(
                                 this,
                                 LinearLayoutManager.VERTICAL,
@@ -123,6 +134,11 @@ class RankingActivity: AppCompatActivity() {
                             puntuaciones = ordenarPuntuaciones(puntuaciones)
                             val adaptador = AdapterRanking(puntuaciones)
                             rankingRecycler.adapter = adaptador
+
+                            //con listView (Adapter.java)
+                            /*puntuaciones = ordenarPuntuaciones(puntuaciones)
+                            val adaptador = Adapter(this, R.layout.item_ranking, puntuaciones)
+                            rankingRecycler.adapter = adaptador*/
                         }
                     }
                 }

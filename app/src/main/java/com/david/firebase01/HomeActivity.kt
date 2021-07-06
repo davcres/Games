@@ -37,7 +37,7 @@ class HomeActivity : AppCompatActivity() {
                 val showErrorButton=Firebase.remoteConfig.getBoolean("show_error_button")
                 //string asociado a la config de que texto mostrar en el boton
                 val errorButtonText=Firebase.remoteConfig.getString("error_button_text")
-                //TODO REMOTE CONFIG
+                //todo REMOTE CONFIG
                 if(showErrorButton){
                     btnForzarError.visibility= View.VISIBLE
                     btnForzarError.text=errorButtonText

@@ -26,6 +26,7 @@
 
     </LinearLayout>
 
+    <!--<ListView-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rankingRecycler"
         android:layout_width="match_parent"

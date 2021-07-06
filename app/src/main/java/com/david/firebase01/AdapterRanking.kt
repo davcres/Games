@@ -1,25 +1,27 @@
 package com.david.firebase01
 
+import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_home.*
 
 /**
  * Adaptador para el RecyclerView de Ranking
  */
+
 class AdapterRanking(listDatos: ArrayList<Ficha>): RecyclerView.Adapter<AdapterRanking.ViewHolderDatos>() {
     var listDatos=listDatos
     var cont = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderDatos {
-        var view=LayoutInflater.from(parent.context).inflate(R.layout.item_ranking, null, false)
+        var view= LayoutInflater.from(parent.context).inflate(R.layout.item_ranking, null, false)
         return ViewHolderDatos(view)
     }
 
@@ -37,6 +39,9 @@ class AdapterRanking(listDatos: ArrayList<Ficha>): RecyclerView.Adapter<AdapterR
         else
             Picasso.get().load(R.mipmap.user).transform(CircleTransform()).into(holder.photo)
         holder.puntuacion.setText(listDatos.get(position).puntuacion.toString())
+
+        //Colores podio
+        /*
         cont++
         println("CONT: $cont")
         if(cont==1) {
@@ -50,7 +55,7 @@ class AdapterRanking(listDatos: ArrayList<Ficha>): RecyclerView.Adapter<AdapterR
         if(cont==3) {
             println("BRONCE: $cont")
             holder.layout.setBackgroundColor(Color.parseColor("#CD7F32"))
-        }
+        }*/
     }
 
     override fun getItemCount(): Int {
