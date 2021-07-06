@@ -8,8 +8,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/candado"
-        android:label="Firebase"
+        android:icon="@mipmap/icon"
+        android:label="Games"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar"> <!-- para que no se muestre en toda la app-->
         <activity android:name=".ProfileActivity"/>
