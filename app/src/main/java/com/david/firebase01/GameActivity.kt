@@ -8,6 +8,8 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_game.*
+import nl.dionsegijn.konfetti.models.Shape
+import nl.dionsegijn.konfetti.models.Size
 import kotlin.random.Random
 
 class GameActivity: AppCompatActivity(), View.OnClickListener{
@@ -191,6 +193,18 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                     }, 1000)
                     if(elementos==0){
                         //puntuacionTV.text = "Tu puntuacion es: $puntuacion puntos"
+                        //https://www.youtube.com/watch?v=jITBp_OylJM
+                        viewKonfetti.build()
+                            .addColors(Color.YELLOW, Color.RED)
+                            .setDirection(90.0, 90.0)
+                            .setSpeed(1f, 5f) //min y max de velocidad
+                            .setFadeOutEnabled(true)
+                            .setTimeToLive(500L)
+                            .addShapes(Shape.Square, Shape.Circle)
+                            .addSizes(Size(16))
+                            .setPosition(-50f, viewKonfetti.width + 50f, -50f, viewKonfetti.height + 50f) //con 0f tb ocupa toda la pantalla
+                            .streamFor(300, 2000L) //Num particulas
+
                         Handler().postDelayed(Runnable {
                             menu.visibility = View.VISIBLE
                         }, 1000)

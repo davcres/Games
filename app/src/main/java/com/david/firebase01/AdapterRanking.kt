@@ -13,9 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 
 /**
- * Adaptador para el RecyclerView de Ranking
+ * Adapter to Ranking using RecycledtView
  */
-
 class AdapterRanking(listDatos: ArrayList<Ficha>): RecyclerView.Adapter<AdapterRanking.ViewHolderDatos>() {
     var listDatos=listDatos
     var cont = 0

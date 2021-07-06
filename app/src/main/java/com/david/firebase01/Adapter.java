@@ -18,6 +18,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+/**
+ * Adapter to Ranking using ListView (Not used)
+ */
 class Adapter extends ArrayAdapter<Ficha> {
     private List<Ficha> mList;
     private Context mContext;
