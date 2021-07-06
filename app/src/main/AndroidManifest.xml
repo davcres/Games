@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.david.firebase01">
+    package="com.david.games">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,12 +12,12 @@
         android:label="Games"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar"> <!-- para que no se muestre en toda la app-->
-        <activity android:name=".ProfileActivity"/>
-        <activity android:name=".RankingActivity"/>
-        <activity android:name=".GameActivity" />
-        <activity android:name=".HomeActivity" />
+        <activity android:name="com.david.games.ProfileActivity"/>
+        <activity android:name="com.david.games.RankingActivity"/>
+        <activity android:name="com.david.games.GameActivity" />
+        <activity android:name="com.david.games.HomeActivity" />
         <activity
-            android:name=".AuthActivity"
+            android:name="com.david.games.AuthActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".MyFirebaseMessagingService"
+            android:name="com.david.games.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

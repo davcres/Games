@@ -1,11 +1,8 @@
-package com.david.firebase01
+package com.david.games
 
-import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -34,7 +31,9 @@ class AdapterRanking(listDatos: ArrayList<Ficha>): RecyclerView.Adapter<AdapterR
             .transform(CircleTransform())
             .into(holder.photo)*/
         if(listDatos.get(position).photo.startsWith("http"))
-            Picasso.get().load(listDatos.get(position).photo).error(R.mipmap.user).transform(CircleTransform()).into(holder.photo)
+            Picasso.get().load(listDatos.get(position).photo).error(R.mipmap.user).transform(
+                CircleTransform()
+            ).into(holder.photo)
         else
             Picasso.get().load(R.mipmap.user).transform(CircleTransform()).into(holder.photo)
         holder.puntuacion.setText(listDatos.get(position).puntuacion.toString())

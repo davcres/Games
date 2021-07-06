@@ -1,4 +1,4 @@
-package com.david.firebase01
+package com.david.games
 
 import android.content.Context
 import android.content.Intent
@@ -9,12 +9,10 @@ import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_auth.*
-import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.activity_profile.*
 
 
-class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogListener  {
+class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogListener {
     private val db = FirebaseFirestore.getInstance() //instancia de la bd definida en remoto
     private lateinit var username: String
     //private lateinit var oldUsername: String
@@ -75,7 +73,7 @@ class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogList
             prefs.clear() //Para borrar todas las preferencias que tenemos guardadas en la App
             prefs.apply()
             //Para cerrar sesion en facebook
-            if(provider==ProviderType.FACEBOOK.name){
+            if(provider== ProviderType.FACEBOOK.name){
                 LoginManager.getInstance().logOut()
             }
             //cierra sesion
