@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name = "Firebase01"
+rootProject.name = "Games"
