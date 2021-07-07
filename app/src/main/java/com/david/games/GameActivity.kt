@@ -27,7 +27,7 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        title="Game"
+        title="Matching Game"
 
         //recuperar los parametros de la otra activity
         val bundle = intent.extras
@@ -170,7 +170,7 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
             button -> {
                 setColor(button, "#84FFFF")
                 b = null
-                print("QUE ES ESTO (GameActivity.kt:171)")
+                print("QUE ES ESTO (GameActivity.kt:173)")
             }
             else -> {
                 b1Ant = b //para que si se pulsa otro boton rapido no se lie, y b sea null cuanto antes
@@ -191,7 +191,9 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                         //reestablecemos los botones por si le da a replay
                         reiniciar()
                     }, 1000)
+
                     if(elementos==0){
+                        print("FIN DEL JEUGO")
                         //puntuacionTV.text = "Tu puntuacion es: $puntuacion puntos"
                         //https://www.youtube.com/watch?v=jITBp_OylJM
                         viewKonfetti.build()
@@ -208,34 +210,8 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                         Handler().postDelayed(Runnable {
                             menu.visibility = View.VISIBLE
                         }, 1000)
-                        db.collection("users").document(email ?: "sin identificar").collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
-                            if(it.exists()){
-                                db.collection("users").document(email ?: "sin identificar")
-                                    .collection("puntuaciones").document("puntuaciones").update(
-                                        mapOf(
-                                            "numPartidas" to partida,
-                                            partida.toString() to puntuacion
-                                        )
-                                    )
-                            }else{
-                                db.collection("users").document(email ?: "sin identificar")
-                                    .collection("puntuaciones").document("puntuaciones").set(
-                                        mapOf(
-                                            "numPartidas" to partida,
-                                            partida.toString() to puntuacion
-                                        )
-                                )
-                            }
-                            //tb puedo ponerlo aqui supongo como el partida += 1
-                        }/*.addOnSuccessListener {
-                            //lo que quiera ejecutar despues de la base de datos, si no pongo el addOnComplete se ejecuta antes que lo de arriba
-                        }*/
-                        var id =email+partida
-                        db.collection("users").document("todos").update(
-                            mapOf(
-                                id to puntuacion
-                            )
-                        )
+
+                        actualizarBD()
                     }
                 }else{
                     puntuacion += 10
@@ -248,6 +224,39 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                 }
             }
         }
+    }
+
+    private fun actualizarBD() {
+        db.collection("users").document(email ?: "sin identificar").collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
+            if(it.exists()){
+                db.collection("users").document(email ?: "sin identificar")
+                    .collection("puntuaciones").document("puntuaciones").update(
+                        mapOf(
+                            "numPartidas" to partida,
+                            partida.toString() to puntuacion
+                        )
+                    )
+                partida++
+            }else{
+                db.collection("users").document(email ?: "sin identificar")
+                    .collection("puntuaciones").document("puntuaciones").set(
+                        mapOf(
+                            "numPartidas" to partida,
+                            partida.toString() to puntuacion
+                        )
+                    )
+                partida++
+            }
+            //tb puedo ponerlo aqui supongo como el partida += 1
+        }/*.addOnSuccessListener {
+                            //lo que quiera ejecutar despues de la base de datos, si no pongo el addOnComplete se ejecuta antes que lo de arriba
+                        }*/
+        /*var id =email+partida
+        db.collection("users").document("todos").update(
+            mapOf(
+                id to puntuacion
+            )
+        )*/
     }
 
     private fun reiniciar(){

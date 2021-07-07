@@ -108,7 +108,7 @@ class RankingActivity: AppCompatActivity() {
                 Toast.makeText(this, "AUN NO DISPONIBLE", Toast.LENGTH_LONG).show()
             }
             "Global" -> {
-                tutorial.setText("")
+                tutorial.text = ""
                 db.collection("users").get().addOnSuccessListener { users ->
                     for (documento in users) {
                         documento.reference.collection("puntuaciones").document("puntuaciones")
