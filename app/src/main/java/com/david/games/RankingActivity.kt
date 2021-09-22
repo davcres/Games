@@ -7,13 +7,17 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.david.modelo.Ficha
+import com.david.modelo.Usuario
+import com.david.resources.AdapterRanking
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_ranking.*
 import kotlin.collections.ArrayList
 
 
 class RankingActivity: AppCompatActivity() {
-    private var email: String? = ""
+    private lateinit var usuario: Usuario
     private val db = FirebaseFirestore.getInstance() //instancia de la bd definida en remoto
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +28,12 @@ class RankingActivity: AppCompatActivity() {
 
         //recuperar los parametros de la otra activity
         val bundle = intent.extras
-        email = bundle?.getString("email")
+        val userString = bundle?.getString("user")
+        val gson = Gson()
+        usuario = gson.fromJson(
+            userString,
+            Usuario::class.java
+        )
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         val arrayAdapter = ArrayAdapter.createFromResource(
@@ -65,12 +74,12 @@ class RankingActivity: AppCompatActivity() {
         var entrada: Ficha //<email, photo, puntuacion>
         when (item) {
             "Individual" -> {
-                db.collection("users").document(email ?: "sin registrar").get().addOnSuccessListener { user ->
+                /*db.collection("users").document(usuario.email ?: "sin registrar").get().addOnSuccessListener { user ->
                     user.reference.collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
                         var partidas = it.get("numPartidas") as Long? ?: 0 //entra aunque no haya puntuaciones => '?'
                         while (partidas > 0) {
                             entrada = Ficha(
-                                email ?: "Sin registrar",
+                                usuario.email ?: "Sin registrar",
                                 user.get("photo") as String? ?: "null",
                                 (it.get(partidas.toString()) as Long).toInt()
                             ) // hay que inicializarlo cada vez para que sean objetos diferentes, si no todos apuntan a uno solo que se actualiza
@@ -96,7 +105,25 @@ class RankingActivity: AppCompatActivity() {
                         val adaptador = Adapter(this, R.layout.item_ranking, puntuaciones)
                         rankingRecycler.adapter = adaptador*/
                     }
-                }
+                }*/
+
+                //como ahora guardo el objeto usuario con sus puntuaciones no necesito acceder a la BD para conseguirlas
+                //con recycledView (AdapterRanking.kt)
+                rankingRecycler.layoutManager = LinearLayoutManager(
+                    this,
+                    LinearLayoutManager.VERTICAL,
+                    false
+                )
+                puntuaciones = ordenarPuntuaciones(usuario.puntuaciones)
+                val adaptador = AdapterRanking(puntuaciones)
+                rankingRecycler.adapter = adaptador
+
+
+                //con listView (Adapter.java)
+                /*
+                puntuaciones = ordenarPuntuaciones(puntuaciones)
+                val adaptador = Adapter(this, R.layout.item_ranking, puntuaciones)
+                rankingRecycler.adapter = adaptador*/
             }
             "Ciudad" -> {
                 Toast.makeText(this, "AUN NO DISPONIBLE", Toast.LENGTH_LONG).show()

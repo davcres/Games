@@ -5,9 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
+import com.david.modelo.ProviderType
+import com.david.modelo.Usuario
+import com.david.resources.CircleTransform
+import com.david.resources.NoticeDialogFragment
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile.*
 
@@ -20,34 +25,63 @@ class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogList
     private lateinit var oldEmail: String
     private lateinit var photo: String
     private lateinit var provider: String
+    private lateinit var user: Usuario
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
         //el email lo cojo de la actividad anterior
-        val bundle = intent.extras
-        email = bundle?.getString("email") ?:"Sin registrar"
+        //val bundle = intent.extras
+        //email = bundle?.getString("email") ?:"Sin registrar"
         //photo = bundle?.getString("photo") ?:"default"
         //username = bundle?.getString("username") ?:"username"
         //println(oldEmail+", "+photo+", "+username)
+
     }
 
     override fun onStart() {
         super.onStart()
+
+        //el email lo cojo de la actividad anterior
+        val bundle = intent.extras
+        val userString = bundle?.getString("user")
+        val gson = Gson()
+        user = gson.fromJson(
+            userString,
+            Usuario::class.java
+        )
+        email = user.email
 
         //las demas cosas las cogemos de la BD (la primera vez tb entra)
         db.collection("users").document(email).get().addOnSuccessListener {
             //oldEmail=it.get("email") as String? ?:"sin registrar"
             //println("oldEmail: "+oldEmail)
             oldEmail=email
-            photo=it.get("photo") as String? ?:"default"
-            username=it.get("username") as String? ?:"username"
+            //photo=it.get("photo") as String? ?:"default"
+            photo = user.photo
+            //username=it.get("username") as String? ?:"username"
+            username = user.username
             //oldUsername=username
-            provider=it.get("provider") as String? ?:"default"
+            //provider=it.get("provider") as String? ?:"default"
+            provider = user.provider.name
         }.addOnSuccessListener {
             setup()
         }
+    }
+
+    override fun onBackPressed() {
+        //super.onBackPressed()
+
+        //convertimos el objeto user a String JSON para enviarlo a otra activity
+        val gson = Gson()
+        val userString = gson.toJson(user)
+
+        val homeIntent = Intent(this, HomeActivity::class.java).apply {
+            putExtra("user", userString)
+        }
+        setResult(RESULT_OK, homeIntent)
+        finish()
     }
 
     private fun setup() {
@@ -73,7 +107,7 @@ class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogList
             prefs.clear() //Para borrar todas las preferencias que tenemos guardadas en la App
             prefs.apply()
             //Para cerrar sesion en facebook
-            if(provider== ProviderType.FACEBOOK.name){
+            if(provider == ProviderType.FACEBOOK.name){
                 LoginManager.getInstance().logOut()
             }
             //cierra sesion
@@ -106,7 +140,7 @@ class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogList
         builder.show(supportFragmentManager, "Perfil")
     }
 
-    //CAMBIAR EMAIL NO IMPLEMENTADO BIEN
+    //CAMBIAR EMAIL -> NO IMPLEMENTADO BIEN
     override fun onDialogPositiveClick(dialog: DialogFragment, newUsername: String, newEmail: String, ok: Boolean) {
         println("OK: $ok")
         if(ok) {
@@ -114,6 +148,7 @@ class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogList
             if (username != newUsername && newUsername.trim() != "") {
                 //username = newUsername
                 userNameTXT.text = newUsername
+                user.username = newUsername
                 db.collection("users").document(email).update(
                     mapOf(
                         "username" to newUsername
@@ -122,6 +157,7 @@ class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogList
             }
             if (email != newEmail && newEmail.trim() != "") {
                 userEmailTXT.text = newEmail
+                //user.email = newEmail
                 db.collection("users").document(email/*todo probar oldEmail*/).update(
                     mapOf(
                         "email" to newEmail
@@ -142,6 +178,7 @@ class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogList
             if (username != newUsername && newUsername.trim() != "") {
                 //username = oldUsername
                 userNameTXT.text = username
+                user.username = username
                 db.collection("users").document(email).update(
                     mapOf(
                         "username" to username
@@ -150,6 +187,7 @@ class ProfileActivity: FragmentActivity(), NoticeDialogFragment.NoticeDialogList
             }
             if (email != newEmail && newEmail.trim() != "") {
                 userEmailTXT.text = email
+                //user.email = email
                 db.collection("users").document(email).update(
                     mapOf(
                         "email" to email

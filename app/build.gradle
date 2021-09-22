@@ -51,4 +51,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.squareup.picasso:picasso:2.71828' //para la foto de perfil
     implementation 'nl.dionsegijn:konfetti:1.2.2' //animacion confeti
+    implementation 'com.google.code.gson:gson:2.8.6' //gson para pasar objetos entre activities
 }

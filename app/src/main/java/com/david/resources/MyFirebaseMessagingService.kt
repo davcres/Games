@@ -1,4 +1,4 @@
-package com.david.games
+package com.david.resources
 
 import android.os.Handler
 import android.os.Looper

@@ -1,4 +1,4 @@
-package com.david.games
+package com.david.resources
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.david.games.R
+import com.david.modelo.Ficha
 import com.squareup.picasso.Picasso
 
 /**

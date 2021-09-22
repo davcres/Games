@@ -7,6 +7,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.david.modelo.Ficha
+import com.david.modelo.ProviderType
+import com.david.modelo.Usuario
 import com.facebook.CallbackManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -20,6 +23,9 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.internal.GsonBuildConfig
 import kotlinx.android.synthetic.main.activity_auth.*
 
 class AuthActivity : AppCompatActivity() {
@@ -28,6 +34,7 @@ class AuthActivity : AppCompatActivity() {
     private val GOOGLE_SIGN_IN = 100 //ID que queramos
     private val callbackManager = CallbackManager.Factory.create()
     private var photo: String? = null
+    private lateinit var user: Usuario
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Splash
@@ -91,7 +98,7 @@ class AuthActivity : AppCompatActivity() {
                             if (it.isSuccessful) {
                                 photo = account.photoUrl.toString()
                                 saveUser(account.email ?:"", ProviderType.GOOGLE,photo ?:"null")
-                                showHome(account.email ?:"", ProviderType.GOOGLE, photo!!)
+                                showHome(user)
                             } else {
                                 showAlert()
                             }
@@ -118,7 +125,7 @@ class AuthActivity : AppCompatActivity() {
                     if(it.isSuccessful){
                         saveUser(etEmail.text.toString(), ProviderType.BASIC,"null")
                         //? para el caso en el que haya un email vacio
-                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
+                        showHome(user)
 
                         //no se podria poner?:
                         //showHome(etEmail.text.toString(), ProviderType.BASIC)
@@ -138,8 +145,11 @@ class AuthActivity : AppCompatActivity() {
                         etContrasena.text.toString()
                     ).addOnCompleteListener {
                     if(it.isSuccessful){
+                        //si es acceder, no llamamos a saveUser pq resetearia el usuario => tenemos que guardar el object user aqui
+                        user = Usuario(etEmail.text.toString(), "null", ProviderType.BASIC, "username", ArrayList<Ficha>())
+
                         //? para el caso en el que haya un email vacio
-                        showHome(it.result?.user?.email ?: "", ProviderType.BASIC, photo ?:"null")
+                        showHome(user)
 
                         //no se podria poner:
                         //showHome(etEmail.text.toString(), ProviderType.BASIC, photo)
@@ -170,6 +180,7 @@ class AuthActivity : AppCompatActivity() {
             startActivityForResult(googleClient.signInIntent, GOOGLE_SIGN_IN)
             //como iniciamos un activity en la que esperamos que nos respondan algo, deberos reimplementar onActivityResult
         }
+
  //FACEBOOK
 /*        btnFacebook.setOnClickListener {
             //Para abrir la pantalla de autenticacion nativa de facebook
@@ -217,28 +228,44 @@ class AuthActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun showHome(email: String, provider: ProviderType, photo: String){
-        //Creamos un Intent a la nueva pantalla para navegar a ella, pasando el contexto(nosotros) y la pantalla a la que queremos navegar
-        //Una vez se instancia, podemos poner apply para poder pasarle diferentes parametros
-        val homeIntent = Intent(this, HomeActivity::class.java).apply{
-            //como queremos que se llame la variable, la variable
-            putExtra("email", email)
-            putExtra("provider", provider.name)
-            putExtra("photo", photo)
+    private fun showHome(user: Usuario){
+        db.collection("users").document(user.email).get().addOnSuccessListener {
+            user.username = it.get("username") as String? ?:"username"
+
+            //convertimos el objeto user a String JSON para enviarlo a otra activity
+            val gson = Gson()
+            val userString = gson.toJson(user)
+
+            //Creamos un Intent a la nueva pantalla para navegar a ella, pasando el contexto(nosotros) y la pantalla a la que queremos navegar
+            //Una vez se instancia, podemos poner apply para poder pasarle diferentes parametros
+            val homeIntent = Intent(this, HomeActivity::class.java).apply{
+                //como queremos que se llame la variable, la variable
+                //putExtra("email", email)
+                //putExtra("provider", provider.name)
+                //putExtra("photo", photo)
+                putExtra("user", userString)
+            }
+            startActivity(homeIntent)
         }
-        startActivity(homeIntent)
     }
 
-    private fun session(){
+    private fun session(){  //todo CREO QUE NO FUNCIONA
         val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
-        val email=prefs.getString("email" /*clave*/, null /*valor defecto*/) //recupera el email de prefs
-        val provider = prefs.getString("provider", null)
-        //println("PHOTOOOO $photo")
-        val photo = prefs.getString("photo", "null")
-        //println("PHOTOOOO $photo")
-        if(email != null && provider != null) {
+
+        val userString = prefs.getString("user", null)
+        val gson = Gson()
+        val user = gson.fromJson(
+            userString,
+            Usuario::class.java
+        )
+        /*val email = user.email
+        val provider = user.provider */
+        //val email=prefs.getString("email" /*clave*/, null /*valor defecto*/) //recupera el email de prefs
+        //val provider = prefs.getString("provider", null)
+        //val photo = prefs.getString("photo", "null")
+        if(user != null) {
             lytAuth.visibility= View.INVISIBLE //Para no mostrarlo en caso de que existe la sesion iniciada
-            showHome(email, ProviderType.valueOf(provider), photo ?:"null")
+            showHome(user)
         }
     }
 
@@ -294,5 +321,6 @@ class AuthActivity : AppCompatActivity() {
             }
         }
 
+        user = Usuario(email, photo, ProviderType.BASIC, "username", ArrayList<Ficha>())
     }
 }

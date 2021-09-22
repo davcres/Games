@@ -1,4 +1,4 @@
-package com.david.games
+package com.david.modelo
 
 import android.provider.ContactsContract.CommonDataKinds.Email
 

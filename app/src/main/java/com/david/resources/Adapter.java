@@ -1,4 +1,4 @@
-package com.david.games;
+package com.david.resources;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.david.games.R;
+import com.david.modelo.Ficha;
+import com.david.resources.CircleTransform;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

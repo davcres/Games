@@ -5,19 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.david.modelo.Ficha
+import com.david.modelo.ProviderType
+import com.david.modelo.Usuario
+import com.david.resources.CircleTransform
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_home.*
-
-enum class  ProviderType{
-    BASIC, //autenticacion basica por email y contraseña
-    GOOGLE, //autenticacion con google
-    FACEBOOK //autenticacion con facebook
-}
 
 class HomeActivity : AppCompatActivity() {
     //Constante para la base de datos
@@ -44,23 +43,23 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }
-    }
 
-    override fun onStart(){ //se invoca cada vez que se vuelve a mostrar esta pantalla
-        super.onStart()
-
-        //Setup
         //recuperar los parametros de la otra activity
         val bundle = intent.extras
-        val email = bundle?.getString("email")
-        val provider = bundle?.getString("provider")
-        val photo = bundle?.getString("photo")
-        //println("PHOTOOOO $photo")
-        var username = ""
-        db.collection("users").document(email ?:"").get().addOnSuccessListener {
-            username = it.get("username") as String? ?:"username"
-            setup(email ?: "", provider ?: "default", photo ?:"default", username ?:"")
-        }
+
+        val userString = bundle?.getString("user")
+        val gson = Gson()
+        val user = gson.fromJson(
+            userString,
+            Usuario::class.java
+        )
+
+        setup(user)
+
+        /*db.collection("users").document(user.email).get().addOnSuccessListener {
+            user.username = it.get("username") as String? ?:"username"
+            setup(user)
+        }*/
 
         //Guardar los datos del usuario autenticado para otras veces
         //constante con el gestor de preferencias de la app, que es el encargado de gestionar el guardado y la recuperacion de datos del tipo clave-valor
@@ -68,24 +67,86 @@ class HomeActivity : AppCompatActivity() {
             getString(R.string.prefs_file)/*accedemos al fichero*/,
             Context.MODE_PRIVATE/*modo de acceso privado*/
         ).edit() //edit para poner en modo de edicion a nuestro share preferences y añadir los datos
-        prefs.putString("email", email) //Clave, valor
-        //prefs.putString("provider", provider)
-        prefs.putString("photo", photo)
-        prefs.putString("username", username)
+        prefs.putString("user", userString)
+        prefs.apply() //para asegurarnos de que se guarden los nuevos datos
+        //si los guardamos, tambien tendremos que borrarlos en el momento en el que se cierre sesion(boton cerrar sesion)
+    }
+
+    /*override fun onStart(){ //se invoca cada vez que se vuelve a mostrar esta pantalla
+        super.onStart()
+
+        //Setup
+        //recuperar los parametros de la otra activity
+        val bundle = intent.extras
+        //val email = bundle?.getString("email")
+        //val provider = bundle?.getString("provider")
+        //val photo = bundle?.getString("photo")
+        //var username = ""
+
+        val userString = bundle?.getString("user")
+        val gson = Gson()
+        val user = gson.fromJson(
+            userString,
+            Usuario::class.java
+        )
+        println("HOLA onStart() ${user.username}")
+        setup(user)
+/*
+        db.collection("users").document(user.email).get().addOnSuccessListener {
+            user.username = it.get("username") as String? ?:"username"
+            setup(user)
+        }*/
+
+        //Guardar los datos del usuario autenticado para otras veces
+        //constante con el gestor de preferencias de la app, que es el encargado de gestionar el guardado y la recuperacion de datos del tipo clave-valor
+        val prefs = getSharedPreferences(
+            getString(R.string.prefs_file)/*accedemos al fichero*/,
+            Context.MODE_PRIVATE/*modo de acceso privado*/
+        ).edit() //edit para poner en modo de edicion a nuestro share preferences y añadir los datos
+        //prefs.putString("email", user.email) //Clave, valor
+        //prefs.putString("provider", user.provider.name)
+        //prefs.putString("photo", user.photo)
+        //prefs.putString("username", user.username)
+        prefs.putString("user", userString)
         prefs.apply() //para asegurarnos de que se guarden los nuevos datos
         //si los guardamos, tambien tendremos que borrarlos en el momento en el que se cierre sesion(boton cerrar sesion)
 
-        intent.extras?.getString("email")?.let { setPuntuaciones(it) }
-        //setPuntuaciones(intent.extras?.getString("email") ?:"sin registrar")
+        //para que solo lo haga si recoge un atributo email de la actividad anterior
+        //intent.extras?.getString("email")?.let { setPuntuaciones(it) }
+
+        if(user != null)
+            setPuntuaciones(user, user.email)
+    }
+    */
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        //Setup
+        //recuperar los parametros de la otra activity
+        val bundle = intent.extras
+        //val email = bundle?.getString("email")
+        //val provider = bundle?.getString("provider")
+        //val photo = bundle?.getString("photo")
+        //var username = ""
+
+        val userString = data?.getStringExtra("user")//bundle?.getString("user")
+        val gson = Gson()
+        val user = gson.fromJson(
+            userString,
+            Usuario::class.java
+        )
+        println("HOLA onActivityResult() ${user.username}, ${user.puntuaciones.size}")
+        setup(user)
     }
 
-    private fun setup(email: String, provider: String, photo: String, username: String){
+    private fun setup(user: Usuario){
         title = "Home"
-        tvEmail.text=email
+        tvEmail.text = user.email
 
         //db.collection("users").document(email).get().addOnSuccessListener {
-            //var username = it.get("username") as String? ?:"username"
-            tvUsername.text=username
+        //var username = it.get("username") as String? ?:"username"
+        tvUsername.text = user.username
         //}
         /*if(photo=="default")
             Picasso.get()
@@ -100,12 +161,15 @@ class HomeActivity : AppCompatActivity() {
             .transform(CircleTransform())       //forma circular
             .into(photoHome)                    //donde
 */
-        if(photo.startsWith("http"))
-            Picasso.get().load(photo).error(R.mipmap.user).transform(CircleTransform()).into(photoHome)
+        if(user.photo.startsWith("http"))
+            Picasso.get().load(user.photo).error(R.mipmap.user).transform(CircleTransform()).into(photoHome)
         else
             Picasso.get().load(R.mipmap.user).transform(CircleTransform()).into(photoHome)
-        //setPuntuaciones(email)
 
+        //para que solo lo haga si recoge un atributo email de la actividad anterior
+        //intent.extras?.getString("email")?.let { setPuntuaciones(it) }
+        if(user != null)
+            setPuntuaciones(user, user.email)
 
         btnCerrarSesion.setOnClickListener {
             //Borrado de datos
@@ -113,7 +177,7 @@ class HomeActivity : AppCompatActivity() {
             prefs.clear() //Para borrar todas las preferencias que tenemos guardadas en la App
             prefs.apply()
             //Para cerrar sesion en facebook
-            if(provider== ProviderType.FACEBOOK.name){
+            if(user.provider.equals(ProviderType.FACEBOOK)){
                 LoginManager.getInstance().logOut()
             }
             //cierra sesion
@@ -157,22 +221,22 @@ class HomeActivity : AppCompatActivity() {
 */
         btnJugar.setOnClickListener {
             //btnGuardar.callOnClick()
-            showGame(email)
+            showGame(user)
         }
 
         RankingButton.setOnClickListener {
-            showRanking(email)
+            showRanking(user)
         }
 
         photoHome.setOnClickListener {
-            showProfile(email, photo)
+            showProfile(user)
         }
     }
 
-    private fun setPuntuaciones(email: String) {
+    private fun setPuntuaciones(user: Usuario, email: String) {
         var puntuaciones = ArrayList<Ficha>()
         var entrada: Ficha //<email, photo, puntuacion>
-       // var numUsers: Int
+        // var numUsers: Int
         //var cont = 0
         db.collection("users").get().addOnSuccessListener { users ->
             //numUsers=users.size()
@@ -189,7 +253,7 @@ class HomeActivity : AppCompatActivity() {
                 //cont++
                 documento.reference.collection("puntuaciones").document("puntuaciones")
                     .get().addOnSuccessListener { doc ->
-                        var partidas = doc.get("numPartidas") as Long? ?: 0
+                        var partidas = /*user.puntuaciones.size*/ doc.get("numPartidas") as Long? ?: 0
                         while (partidas > 0) {
                             entrada = Ficha(
                                 documento.get("email") as String? ?:"null",
@@ -205,32 +269,43 @@ class HomeActivity : AppCompatActivity() {
 
                         //println("cont $cont - $numUsers")
                         //if(cont == numUsers) {
-                          //  println("PUNTUACIONES ${puntuaciones.size} ${users.size()}")
+                        //  println("PUNTUACIONES ${puntuaciones.size} ${users.size()}")
                         puntuaciones = ordenarPuntuaciones(puntuaciones)
-                        getPersonal(email, puntuaciones)
+                        getPersonal(user, email, puntuaciones)
                         if(puntuaciones.size!=0)
                             globalTV.text = "Record Mundial: ${puntuaciones.get(0).puntuacion.toString()} puntos"
-                       //}
+                        //}
+                        println("USER: ${user.puntuaciones.size}")
                     }
             }
         }
     }
 
-    private fun getPersonal(email: String, puntuaciones: ArrayList<Ficha>): Int {
-        //println("PUNTUACIONES SIZE ${puntuaciones.size}")
+    private fun getPersonal(user: Usuario, email: String, puntuaciones: ArrayList<Ficha>): Int {
+        //La lista de puntuaciones esta ordenada => La primera vez que se encuentre ese email es su mejor puntuacion
         var cont = 1
         var puntuacionAnterior = 0
+        var flag = true
+        var puntuacionesUser = ArrayList<Ficha>()
         for(i: Ficha in puntuaciones){
             if(i.email == email){
-                getPosicion(i.puntuacion, puntuacionAnterior, cont, puntuaciones)
-                personalTV.text = "Record Personal: ${i.puntuacion.toString()} puntos"
-                return 0
+                if(flag) {
+                    flag = false
+                    getPosicion(i.puntuacion, puntuacionAnterior, cont, puntuaciones)
+                    personalTV.text = "Record Personal: ${i.puntuacion.toString()} puntos"
+                    //return 0
+                }
+                puntuacionesUser.add(i)
             }
             puntuacionAnterior = i.puntuacion
             cont++
         }
-        personalTV.text = "Aún no hay partidas"
-        return -1
+        user.puntuaciones = puntuacionesUser
+        if(flag) {
+            personalTV.text = "Aún no hay partidas"
+            return -1
+        }
+        return 0
     }
 
     private fun getPosicion(puntuacion: Int, puntuacionAnterior: Int, contador: Int, puntuaciones: ArrayList<Ficha>) {
@@ -266,25 +341,37 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun showGame(email: String){
+    private fun showGame(user: Usuario){
+        //convertimos el objeto user a String JSON para enviarlo a otra activity
+        val gson = Gson()
+        val userString = gson.toJson(user)
+
         val gameIntent = Intent(this, GameActivity::class.java).apply {
             //lo que le quiera pasar a la nueva activity
-            putExtra("email", email)
+            putExtra("user", userString)
         }
-        startActivity(gameIntent)
+        startActivityForResult(gameIntent, 1)
     }
 
-    private fun showRanking(email: String){
+    private fun showRanking(user: Usuario){
+        //convertimos el objeto user a String JSON para enviarlo a otra activity
+        val gson = Gson()
+        val userString = gson.toJson(user)
+
         val rankingIntent = Intent(this, RankingActivity::class.java).apply {
-            putExtra("email", email)
+            putExtra("user", userString)
         }
         startActivity(rankingIntent)
     }
 
-    private fun showProfile(email: String, photo: String){
+    private fun showProfile(user: Usuario){
+        //convertimos el objeto user a String JSON para enviarlo a otra activity
+        val gson = Gson()
+        val userString = gson.toJson(user)
+
         val profileIntent = Intent(this, ProfileActivity::class.java).apply {
-            putExtra("email", email)
+            putExtra("user", userString)
         }
-        startActivity(profileIntent)
+        startActivityForResult(profileIntent, 1)
     }
 }

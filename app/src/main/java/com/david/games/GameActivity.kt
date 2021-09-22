@@ -1,12 +1,16 @@
 package com.david.games
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.david.modelo.Ficha
+import com.david.modelo.Usuario
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_game.*
 import nl.dionsegijn.konfetti.models.Shape
 import nl.dionsegijn.konfetti.models.Size
@@ -22,6 +26,7 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
     private val db = FirebaseFirestore.getInstance() //instancia de la bd definida en remoto
     private var email: String? = ""
     private var partida: Long = 1
+    private lateinit var user: Usuario
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,19 +36,40 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
 
         //recuperar los parametros de la otra activity
         val bundle = intent.extras
-        email = bundle?.getString("email")
+        val userString = bundle?.getString("user")
+        val gson = Gson()
+        user = gson.fromJson(
+            userString,
+            Usuario::class.java
+        )
+        email = user.email
 
         //recuperar el num de partidas de la bd
-        db.collection("users").document(email ?:"sin registrar").collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
+        /*db.collection("users").document(email ?:"sin registrar").collection("puntuaciones").document("puntuaciones").get().addOnSuccessListener {
             partida = it.get("numPartidas") as Long? ?:0
             if(partida == 0.toLong())
                 partida=1
             else
                 partida += 1 //sumamos 1 para que guarde la siguiente partida a la ultima echada
-        }
+        }*/
+        partida = user.puntuaciones.size.toLong() + 1
 
         clickers()
         generarParejas()
+    }
+
+    override fun onBackPressed() {
+        //super.onBackPressed()
+
+        //convertimos el objeto user a String JSON para enviarlo a otra activity
+        val gson = Gson()
+        val userString = gson.toJson(user)
+println("USER GAME ${user.puntuaciones.size}")
+        val homeIntent = Intent(this, HomeActivity::class.java).apply {
+            putExtra("user", userString)
+        }
+        setResult(RESULT_OK, homeIntent)
+        finish()
     }
 
 
@@ -192,8 +218,8 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                         reiniciar()
                     }, 1000)
 
-                    if(elementos==0){
-                        print("FIN DEL JEUGO")
+                    if(elementos == 0){
+                        println("FIN DEL JEUGO")
                         //puntuacionTV.text = "Tu puntuacion es: $puntuacion puntos"
                         //https://www.youtube.com/watch?v=jITBp_OylJM
                         viewKonfetti.build()
@@ -211,6 +237,7 @@ class GameActivity: AppCompatActivity(), View.OnClickListener{
                             menu.visibility = View.VISIBLE
                         }, 1000)
 
+                        user.addPuntuacion(puntuacion)
                         actualizarBD()
                     }
                 }else{
